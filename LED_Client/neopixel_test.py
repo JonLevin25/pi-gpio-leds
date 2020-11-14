@@ -1,12 +1,11 @@
-import math
-from asyncio.events import AbstractEventLoop
-from typing import TypeVar, Generic, Callable
+from random import random
+from typing import *
 
 import pytweening
 import board
 import neopixel
 import time
-import asyncio
+from colorzero.conversions import hsv_to_rgb, rgb_to_hsv
 
 # Colors
 COL_BLACK = (0, 0, 0)
@@ -31,14 +30,35 @@ def lerp(t: float, from_: float, to: float) -> float:
     return from_ + t * delta
 
 
+def get_hue(rgb_bytes: Iterable[int]) -> float:
+    hsv = rgb_to_hsv(*(x / 255 for x in rgb_bytes))
+    return hsv.hue
+
+
+def get_rgb_bytes(hue: float, sat: float = 1, light: float = 1):
+    rgb = hsv_to_rgb(hue, sat, light)
+    return [int(x * 255) for x in rgb]
+
+
+def add_hue(rgb_bytes: Iterable[int], hue_to_add: float):
+    old_hue = get_hue(rgb_bytes)
+    rgb_bytes = get_rgb_bytes(old_hue + hue_to_add)
+    return rgb_bytes
+
+def rand_color():
+    hue = random()
+    return get_rgb_bytes(hue)
+
 T = TypeVar('T')
 
 
+# TODO: Convert to generic "Tween" / "LedAction" class
 class TempBase(Generic[T]):
-    def __init__(self, iteration_time: float, ):
+    def __init__(self, pixels: List[neopixel.NeoPixel], iteration_time: float, ):
         if iteration_time <= 0:
             raise ValueError("Iteration time muse be positive!")
 
+        self.pixels = pixels
         self.iteration_time = iteration_time
 
     def _tick(self, curr_time: float):
@@ -64,12 +84,13 @@ class TempBase(Generic[T]):
 
 
 class BrightnessPingPong(TempBase):
-    def __init__(self, half_cycle_time: float, min_brightness: float, max_brightness: float, start_ascending=True,
-                 ease_func: Callable[[float], float]=pytweening.linear):
+    def __init__(self, pixels, half_cycle_time: float, min_brightness: float, max_brightness: float,
+                 start_ascending=True,
+                 ease_func: Callable[[float], float] = pytweening.linear):
         MIN_ALLOWED_BRIGHTNESS = 0.0
-        MAX_ALLOWED_BRIGHTNESS = 0.99 # to avoid getting stuck
+        MAX_ALLOWED_BRIGHTNESS = 0.99  # to avoid getting stuck
 
-        super().__init__(half_cycle_time)
+        super().__init__(pixels, half_cycle_time)
         self.min_brightness = max(min_brightness, MIN_ALLOWED_BRIGHTNESS)
         self.max_brightness = min(max_brightness, MAX_ALLOWED_BRIGHTNESS)
         self.start_ascending = start_ascending
@@ -79,10 +100,10 @@ class BrightnessPingPong(TempBase):
         return max(min(b, self.max_brightness), self.min_brightness)
 
     def get_brightness(self) -> float:
-        return pixels.brightness
+        return self.pixels.brightness
 
     def set_brightness(self, val: float):
-        pixels.brightness = val
+        self.pixels.brightness = val
 
     def get_normalized_t(self, t: float):
         norm_t_unclamped = (t - self.start_time) / self.iteration_time + self.norm_offset
@@ -97,14 +118,11 @@ class BrightnessPingPong(TempBase):
         b = lerp(eased_t, self.min_brightness, self.max_brightness)
         return self.clamp_brightness(b)
 
-
     def start(self, t):
         self.start_time = t
         self.norm_offset = inverse_lerp(self.get_brightness(), self.min_brightness, self.max_brightness)
 
     def update(self, t: float):
-        curr_b = self.get_brightness()
-
         norm_t = self.get_normalized_t(t)
         new_b = self.get_b(norm_t)
         # print('Asc: {}, t: {}, curr_b: {}, new_b: {}, clamped: {}. Range[{}, {}]'.format(self.ascending, t, curr_b, new_b, clamped_new_b, self.min_brightness, self.max_brightness))
@@ -113,12 +131,44 @@ class BrightnessPingPong(TempBase):
         pixels.show()
 
 
-def main():
-    pixels.brightness = 0
-    pixels.fill(COL_BLUE)
-    # brightnessPingPong(0, 1, start_ascending=True)
+# TODO: Finish this
+class ColorCycle(TempBase):
+    def __init__(self, pixels: List[neopixel.NeoPixel], cycle_time: float, start_ascending=True,
+                 ease_func: Callable[[float], float] = pytweening.linear):
+        super().__init__(pixels, cycle_time)
+        self.start_ascending = start_ascending
+        self.ease_func = ease_func
+        self.start_pixels = pixels
 
-    b = BrightnessPingPong(half_cycle_time=1.5, min_brightness=0.0, max_brightness=1.0, ease_func=pytweening.easeInOutCubic)
+    @property
+    def colors(self) -> Iterable[Iterable[float]]:
+        self.pixels[:]
+
+    @colors.setter
+    def colors(self, value: Iterable[Iterable[float]]):
+        self.pixels[:len(value)] = value
+
+
+
+def main():
+    # pixels.brightness = 0
+    test = [rand_color() for i in range(len(pixels))]
+    pixels[:] = test
+    while True:
+        for i in range(len(pixels)):
+            p = pixels[i]
+            new_p = add_hue(p, 0.01)
+            pixels[i] = new_p
+
+        time.sleep(0.01)
+
+    # pixels.fill(COL_BLUE)
+    # brightnessPingPong(0, 1, start_ascending=True)
+    time.sleep(3)
+    return
+
+    b = BrightnessPingPong(half_cycle_time=1.5, min_brightness=0.0, max_brightness=1.0,
+                           ease_func=pytweening.easeInOutCubic)
 
     start_time = time.time()
     b.run(start_time)
