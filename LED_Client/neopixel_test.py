@@ -12,9 +12,9 @@ COL_BLACK = (0, 0, 0)
 COL_BLUE = (0, 255, 0)
 COL_RED = (255, 0, 0)
 
-ADDRESSABLE_LEDS = 50 # (30/m * 5m) / 3 [Addr is Groups of 3]
+ADDRESSABLE_LEDS = 30  # (30/m * 5m) / 3 [Addr is Groups of 3]
 
-pixels = neopixel.NeoPixel(board.D18, 50, brightness=0.1)
+pixels = neopixel.NeoPixel(board.D18, ADDRESSABLE_LEDS, brightness=1, auto_write=False)
 
 pixels.fill(COL_BLACK)
 pixels.show()
@@ -47,9 +47,11 @@ def add_hue(rgb_bytes: Iterable[int], hue_to_add: float):
     rgb_bytes = get_rgb_bytes(old_hue + hue_to_add)
     return rgb_bytes
 
+
 def rand_color():
     hue = random()
     return get_rgb_bytes(hue)
+
 
 T = TypeVar('T')
 
@@ -151,25 +153,23 @@ class ColorCycle(TempBase):
         self.pixels[:len(value)] = value
 
 
-
-def main():
-    # pixels.brightness = 0
-    test = [rand_color() for i in range(len(pixels))]
-    pixels[:] = test
+def test_color_cycle():
     while True:
         for i in range(len(pixels)):
             p = pixels[i]
-            new_p = add_hue(p, 0.01)
+            new_p = add_hue(p, 0.002)
             pixels[i] = new_p
+        pixels.show()
 
-        time.sleep(0.01)
+        time.sleep(0.0000000001)
 
-    # pixels.fill(COL_BLUE)
-    # brightnessPingPong(0, 1, start_ascending=True)
-    time.sleep(3)
-    return
 
-    b = BrightnessPingPong(half_cycle_time=1.5, min_brightness=0.0, max_brightness=1.0,
+def main():
+    test = [rand_color() for i in range(len(pixels))]
+    pixels[:] = test
+    # pixels.brightness = 0
+    # test_color_cycle()
+    b = BrightnessPingPong(pixels, half_cycle_time=2.5, min_brightness=0.0, max_brightness=1.0,
                            ease_func=pytweening.easeInOutCubic)
 
     start_time = time.time()
