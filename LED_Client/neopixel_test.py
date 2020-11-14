@@ -1,16 +1,11 @@
-from random import random
-from typing import *
-
 import pytweening
 import board
 import neopixel
 import time
-from colorzero.conversions import hsv_to_rgb, rgb_to_hsv
 
-# Colors
-COL_BLACK = (0, 0, 0)
-COL_BLUE = (0, 255, 0)
-COL_RED = (255, 0, 0)
+from typing import *
+from Utils.color_util import *
+from Utils.math_util import *
 
 ADDRESSABLE_LEDS = 30  # (30/m * 5m) / 3 [Addr is Groups of 3]
 
@@ -18,50 +13,6 @@ pixels = neopixel.NeoPixel(board.D18, ADDRESSABLE_LEDS, brightness=1, auto_write
 
 pixels.fill(COL_BLACK)
 pixels.show()
-
-
-def lerp(t: float, from_: float, to: float) -> float:
-    delta = to - from_
-    return from_ + t * delta
-
-
-def inverse_lerp(t: float, from_: float, to: float) -> float:
-    delta = to - from_
-    if delta == 0:
-        raise ValueError("_from and to cannot be the same!")
-    return (t - from_) / delta
-
-
-def lerp01(t: float) -> float:
-    return lerp(t, 0.0, 1.0)
-
-
-def inverse_lerp01(t: float) -> float:
-    return inverse_lerp(t, 0.0, 1.0)
-
-def get_hsv(rgb_bytes: Iterable[int]) -> Iterable[float]:
-    return rgb_to_hsv(*(x / 255 for x in rgb_bytes))
-
-def get_hue(rgb_bytes: Iterable[int]) -> float:
-    hsv = get_hsv(rgb_bytes)
-    return hsv.hue
-
-
-def get_rgb_bytes(hue: float, sat: float = 1, light: float = 1):
-    rgb = hsv_to_rgb(hue, sat, light)
-    return [int(x * 255) for x in rgb]
-
-
-def add_hue(rgb_bytes: Iterable[int], hue_to_add: float):
-    old_hue = get_hue(rgb_bytes)
-    rgb_bytes = get_rgb_bytes(old_hue + hue_to_add)
-    return rgb_bytes
-
-
-def rand_color():
-    hue = random()
-    return get_rgb_bytes(hue)
-
 
 T = TypeVar('T')
 
