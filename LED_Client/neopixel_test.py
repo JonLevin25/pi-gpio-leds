@@ -17,6 +17,32 @@ pixels.fill(COL_BLACK)
 pixels.show()
 
 
+def wheel(pos):
+    # Input a value 0 to 255 to get a color value.
+    # The colours are a transition r - g - b - back to r.
+    if pos < 0 or pos > 255:
+        return (0, 0, 0)
+    if pos < 85:
+        return (255 - pos * 3, pos * 3, 0)
+    if pos < 170:
+        pos -= 85
+        return (0, 255 - pos * 3, pos * 3)
+    pos -= 170
+    return (pos * 3, 0, 255 - pos * 3)
+
+
+def set_sequential(pixels: neopixel.NeoPixel, offset: float = 0.0):
+    num_pixels = len(pixels)
+    for i in range(num_pixels):
+        hue = (i / num_pixels) + offset
+        pixels[i] = get_rgb_bytes(hue, light=pixels.brightness)
+
+
+def set_random(pixels: neopixel.NeoPixel):
+    test = [rand_color() for i in range(len(pixels))]
+    pixels[:] = test
+
+
 # convenience actions, just so its easier to comment lines out in actions set
 def action_bright_pingpong():
     return BrightnessPingPong(pixels, half_cycle_time=2.5, min_brightness=0.0, max_brightness=1.0,
@@ -24,13 +50,16 @@ def action_bright_pingpong():
 
 
 def action_colorcycle():
-    return ColorCycle(pixels, 10)
+    return ColorCycle(pixels, 5)
 
 
 def main():
-    test = [rand_color() for i in range(len(pixels))]
-    pixels[:] = test
-    # pixels.brightness = 0
+    pixels.brightness = 0.5
+    # from found_example_code.adafruit_learn_neopixel.adafruit_neopixel_annotated import color_chase
+    # while True:
+    #     color_chase(pixels, COL_RED, 0.01)
+    #     color_chase(pixels, COL_GREEN, 0.01)
+    #     color_chase(pixels, COL_BLUE, 0.01)
 
     print('creating actions to run')
     actions = {

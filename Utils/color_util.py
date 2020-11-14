@@ -5,8 +5,9 @@ from random import random
 
 # Colors
 COL_BLACK = (0, 0, 0)
-COL_BLUE = (0, 255, 0)
 COL_RED = (255, 0, 0)
+COL_GREEN = (0, 0, 255)
+COL_BLUE = (0, 255, 0)
 
 
 def get_hsv(rgb_bytes: Iterable[int]) -> Iterable[float]:
@@ -18,7 +19,7 @@ def get_hue(rgb_bytes: Iterable[int]) -> float:
     return hsv.hue
 
 
-def get_rgb_bytes(hue: float, sat: float = 1, light: float = 1):
+def get_rgb_bytes(hue: float, sat: float = 1, light: float = -1):
     rgb = hsv_to_rgb(hue, sat, light)
     return [int(x * 255) for x in rgb]
 
