@@ -77,9 +77,8 @@ class TempBase(Generic[T]):
         self.norm_t_offset = 0
 
     def tick(self, curr_time: float):
-        normalized_t = (curr_time - self.start_time) / self.iteration_time
-        normalized_dt = (curr_time - self.prev_tick) / self.iteration_time
-        self._update(normalized_t, normalized_dt)
+        dt = curr_time - self.prev_tick
+        self._update(curr_time, dt)
         self.prev_tick = curr_time
 
     def run(self, curr_time: float):
@@ -130,7 +129,7 @@ class BrightnessPingPong(TempBasePingPong):
         MIN_ALLOWED_BRIGHTNESS = 0.0
         MAX_ALLOWED_BRIGHTNESS = 0.99  # to avoid getting stuck
 
-        super().__init__(pixels, half_cycle_time)
+        super().__init__(pixels=pixels, iteration_time=half_cycle_time)
         self.min_brightness = max(min_brightness, MIN_ALLOWED_BRIGHTNESS)
         self.max_brightness = min(max_brightness, MAX_ALLOWED_BRIGHTNESS)
         self.start_ascending = start_ascending
