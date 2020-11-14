@@ -158,7 +158,6 @@ class BrightnessPingPong(TempBasePingPong):
         # print('Asc: {}, t: {}, curr_b: {}, new_b: {}, clamped: {}. Range[{}, {}]'.format(self.ascending, t, curr_b, new_b, clamped_new_b, self.min_brightness, self.max_brightness))
         print('norm_t: {:.3f}, new_b: {:.3f}'.format(norm_t, new_b))
         pixels.brightness = new_b
-        pixels.show()
 
 
 # TODO: Finish this
@@ -166,10 +165,10 @@ class BrightnessPingPong(TempBasePingPong):
 class ColorCycle(TempBase):
     def __init__(self, pixels: List[neopixel.NeoPixel], cycle_time: float, start_ascending=True,
                  ease_func: Callable[[float], float] = pytweening.linear):
-        super().__init__(pixels, cycle_time)
+        super().__init__(pixels=pixels, iteration_time=cycle_time)
         self.start_ascending = start_ascending
         self.ease_func = ease_func
-        self.start_pixels = pixels
+        self.pixels = pixels
 
     @property
     def colors(self) -> Iterable[Iterable[float]]:
@@ -192,7 +191,7 @@ class ColorCycle(TempBase):
         pass
 
     def _update(self, t: float, dt: float):
-        for i in len(self.pixels):
+        for i in range(len(self.pixels)):
             p = self.pixels[i]
             new_p = self.get_next(p, dt)
             self.pixels[i] = new_p
@@ -209,27 +208,48 @@ def test_color_cycle():
         time.sleep(0.0000000001)
 
 
+# convenience actions, just so its easier to comment lines out in actions set
+def action_bright_pingpong():
+    return BrightnessPingPong(pixels, half_cycle_time=2.5, min_brightness=0.0, max_brightness=1.0,
+                       ease_func=pytweening.easeInOutCubic),
+
+
+def action_colorcycle():
+    return ColorCycle(pixels, 10)
+
+
 def main():
     test = [rand_color() for i in range(len(pixels))]
     pixels[:] = test
     # pixels.brightness = 0
+
+    print('creating actions to run')
     actions = {
-        BrightnessPingPong(pixels, half_cycle_time=2.5, min_brightness=0.0, max_brightness=1.0,
-                           ease_func=pytweening.easeInOutCubic),
+        # action_bright_pingpong(),
+        action_colorcycle(),
+
     }
+    print('{} actions set. Initializing'.format(len(actions)))
 
     curr_time = time.time()
     for a in actions:
         a.run(curr_time)
 
+    pixels.show()
+
+    print('actions initiazlied')
     while True:
         curr_time = time.time()
         for a in actions:
             a.tick(curr_time)
+        pixels.show()
 
 
 try:
     main()
 finally:
+    print('creating actions to run')
     pixels.fill(COL_BLACK)
     pixels.show()
+    print('Exiting...')
+
