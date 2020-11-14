@@ -12,7 +12,9 @@ COL_BLACK = (0, 0, 0)
 COL_BLUE = (0, 255, 0)
 COL_RED = (255, 0, 0)
 
-pixels = neopixel.NeoPixel(board.D18, 25, brightness=0.1)
+ADDRESSABLE_LEDS = 50 # (30/m * 5m) / 3 [Addr is Groups of 3]
+
+pixels = neopixel.NeoPixel(board.D18, 50, brightness=0.1)
 
 pixels.fill(COL_BLACK)
 pixels.show()
