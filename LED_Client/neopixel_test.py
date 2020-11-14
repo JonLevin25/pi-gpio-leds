@@ -17,21 +17,10 @@ pixels.fill(COL_BLACK)
 pixels.show()
 
 
-def test_color_cycle():
-    while True:
-        for i in range(len(pixels)):
-            p = pixels[i]
-            new_p = add_hue(p, 0.002)
-            pixels[i] = new_p
-        pixels.show()
-
-        time.sleep(0.0000000001)
-
-
 # convenience actions, just so its easier to comment lines out in actions set
 def action_bright_pingpong():
     return BrightnessPingPong(pixels, half_cycle_time=2.5, min_brightness=0.0, max_brightness=1.0,
-                       ease_func=pytweening.easeInOutCubic),
+                              ease_func=pytweening.easeInOutCubic),
 
 
 def action_colorcycle():
@@ -72,4 +61,3 @@ finally:
     pixels.fill(COL_BLACK)
     pixels.show()
     print('Exiting...')
-

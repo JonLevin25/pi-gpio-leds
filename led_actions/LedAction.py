@@ -4,7 +4,7 @@ import neopixel
 
 
 # TODO: Convert to generic "Tween" / "LedAction" class
-class TempBase:
+class LedAction:
     def __init__(self, pixels: List[neopixel.NeoPixel], iteration_time: float):
         if iteration_time <= 0:
             raise ValueError("Iteration time muse be positive!")
@@ -47,13 +47,3 @@ class TempBase:
         dt: the time since last update
         """
         pass
-
-
-class TempBasePingPong(TempBase):
-    def get_norm_t_pingpong(self, t: float):
-        norm_t_unclamped = (t - self.start_time) / self.iteration_time + self.norm_t_offset
-        complete_iters = int(norm_t_unclamped)
-        curr_ascending = self.start_ascending ^ complete_iters % 2  # true if currently ascending
-
-        naive_norm_t = norm_t_unclamped % 1
-        return naive_norm_t if curr_ascending else 1 - naive_norm_t

@@ -4,10 +4,10 @@ import neopixel
 import pytweening
 
 from Utils.color_util import *
-from led_actions.TempBase import TempBase
+from led_actions.LedAction import LedAction
 
 
-class ColorCycle(TempBase):
+class ColorCycle(LedAction):
     def __init__(self, pixels: List[neopixel.NeoPixel], cycle_time: float, start_ascending=True,
                  ease_func: Callable[[float], float] = pytweening.linear):
         super().__init__(pixels=pixels, iteration_time=cycle_time)

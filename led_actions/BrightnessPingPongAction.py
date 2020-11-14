@@ -3,11 +3,11 @@ from typing import Callable
 import pytweening
 
 from Utils.math_util import *
-from led_actions.TempBase import TempBasePingPong
+from led_actions.LedActionPingPong import LedActionPingPong
 
 
 # work with deltas so it reacts to outside changes
-class BrightnessPingPong(TempBasePingPong):
+class BrightnessPingPong(LedActionPingPong):
     def __init__(self, pixels, half_cycle_time: float, min_brightness: float, max_brightness: float,
                  start_ascending=True,
                  ease_func: Callable[[float], float] = pytweening.linear):
