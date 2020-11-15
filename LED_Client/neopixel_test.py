@@ -45,14 +45,14 @@ def set_random(pixels: neopixel.NeoPixel):
 
 
 # convenience actions, just so its easier to comment lines out in actions set
-def action_bright_pingpong():
+def action_bright_pingpong(half_cycle_time, callback = None):
     # dont set min brighness to 0 since that messes up hue calculation for other funcs
-    return BrightnessPingPong(pixels, half_cycle_time=60, min_brightness=0.4, max_brightness=1.0,
-                              ease_func=pytweening.easeInOutCubic)
+    return BrightnessPingPong(pixels, half_cycle_time=half_cycle_time, min_brightness=0.0, max_brightness=0.8,
+                              ease_func=pytweening.easeInOutCubic, on_halfcycle_finished=callback)
 
 
-def action_colorcycle():
-    return ColorCycle(pixels, 5, ascending=False)
+def action_colorcycle(iter_time):
+    return ColorCycle(pixels, iter_time, ascending=False)
 
 
 def main():
@@ -71,10 +71,15 @@ def main():
     #     color_chase(pixels, COL_GREEN, 0.01)
     #     color_chase(pixels, COL_BLUE, 0.01)
 
+    def on_brightness_halfcycle(i: int):
+        print(i)
+        if i % 2 == 0:
+            set_random(pixels)
+
     print('creating actions to run')
     actions = {
-        action_bright_pingpong(),
-        # action_colorcycle(),
+        action_bright_pingpong(5, on_brightness_halfcycle),
+        # action_colorcycle(5),
 
     }
     print('{} actions set. Initializing'.format(len(actions)))
