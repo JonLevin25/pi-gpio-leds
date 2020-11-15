@@ -8,10 +8,10 @@ from led_actions.LedAction import LedAction
 
 
 class ColorCycle(LedAction):
-    def __init__(self, pixels: List[neopixel.NeoPixel], cycle_time: float, start_ascending=True,
+    def __init__(self, pixels: List[neopixel.NeoPixel], cycle_time: float, ascending=True,
                  ease_func: Callable[[float], float] = pytweening.linear):
         super().__init__(pixels=pixels, iteration_time=cycle_time)
-        self.start_ascending = start_ascending
+        self.ascending = ascending
         self.ease_func = ease_func
         self.pixels = pixels
 
@@ -25,6 +25,9 @@ class ColorCycle(LedAction):
 
     def get_next(self, pixel, dt: float) -> float:
         norm_dt = self.get_norm_dt(dt)
+        if not self.ascending:
+            norm_dt *= -1
+
         (old_h, s, v) = get_hsv(pixel)
         naive_new_hue = (old_h + norm_dt) % 1
         new_hue = self.ease_func(naive_new_hue)

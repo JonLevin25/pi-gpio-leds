@@ -1,4 +1,5 @@
 import pytweening
+import itertools
 import board
 import neopixel
 import time
@@ -45,16 +46,25 @@ def set_random(pixels: neopixel.NeoPixel):
 
 # convenience actions, just so its easier to comment lines out in actions set
 def action_bright_pingpong():
-    return BrightnessPingPong(pixels, half_cycle_time=2.5, min_brightness=0.0, max_brightness=1.0,
-                              ease_func=pytweening.easeInOutCubic),
+    # dont set min brighness to 0 since that messes up hue calculation for other funcs
+    return BrightnessPingPong(pixels, half_cycle_time=60, min_brightness=0.4, max_brightness=1.0,
+                              ease_func=pytweening.easeInOutCubic)
 
 
 def action_colorcycle():
-    return ColorCycle(pixels, 5)
+    return ColorCycle(pixels, 5, ascending=False)
 
 
 def main():
     pixels.brightness = 0.5
+    # set_sequential(pixels, 0)
+    pixels[:] = [COL_RED for i in range(len(pixels))]
+    # set_random(pixels)
+    time.sleep(2)
+    pixels.show()
+
+    # pixels[num_pixels // 2 + 1: num_pixels] = COL_RED
+
     # from found_example_code.adafruit_learn_neopixel.adafruit_neopixel_annotated import color_chase
     # while True:
     #     color_chase(pixels, COL_RED, 0.01)
@@ -63,8 +73,8 @@ def main():
 
     print('creating actions to run')
     actions = {
-        # action_bright_pingpong(),
-        action_colorcycle(),
+        action_bright_pingpong(),
+        # action_colorcycle(),
 
     }
     print('{} actions set. Initializing'.format(len(actions)))
@@ -85,8 +95,11 @@ def main():
 
 try:
     main()
+
+    # just here to prototype stuff instead of main quickly
+    while True:
+        pass
 finally:
-    print('creating actions to run')
     pixels.fill(COL_BLACK)
     pixels.show()
     print('Exiting...')
