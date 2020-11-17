@@ -5,7 +5,7 @@ import neopixel
 
 # TODO: Convert to generic "Tween" / "LedAction" class
 class LedAction:
-    def __init__(self, pixels: List[neopixel.NeoPixel], iteration_time: float):
+    def __init__(self, pixels: neopixel.NeoPixel, iteration_time: float):
         if iteration_time <= 0:
             raise ValueError("Iteration time muse be positive!")
 
