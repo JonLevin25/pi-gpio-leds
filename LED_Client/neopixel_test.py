@@ -62,12 +62,13 @@ def rand_colors_from_list(color_set: Sequence[Tuple[int]]) -> Tuple[int]:
 # convenience actions, just so its easier to comment lines out in actions set
 def action_bright_pingpong(half_cycle_time, callback=None):
     # dont set min brighness to 0 since that messes up hue calculation for other funcs
-    return BrightnessPingPong(pixels, half_cycle_time=half_cycle_time, min_brightness=0.0, max_brightness=0.8,
+    return BrightnessPingPong(pixels, half_cycle_time=half_cycle_time, min_brightness=0.0, max_brightness=0.45,
                               ease_func=pytweening.easeInOutCubic, on_halfcycle_finished=callback)
 
 
 def rand_deep_color(min_sat: float = 0.9, lum=0.75):
     sat = random.uniform(min_sat, 1)
+    hue = random.uniform(0, 1)
     return get_rgb_bytes(hue, sat, lum)
 
 
@@ -105,7 +106,6 @@ def colorREPL():
         pixels.show()
 
 
-
 def main():
     pixels.brightness = 0.6
     # colorREPL()
@@ -136,7 +136,7 @@ def main():
 
     print('creating actions to run')
     actions = {
-        action_bright_pingpong(5, on_brightness_halfcycle),
+        action_bright_pingpong(3.076923077*0.5, on_brightness_halfcycle),
         # action_colorcycle(5),
 
     }
