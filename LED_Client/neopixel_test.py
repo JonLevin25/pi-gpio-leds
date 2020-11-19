@@ -66,10 +66,8 @@ def action_bright_pingpong(half_cycle_time, callback=None):
                               ease_func=pytweening.easeInOutCubic, on_halfcycle_finished=callback)
 
 
-def rand_deep_color(min_sat: float = 0.8, max_lum: float = 0.6):
+def rand_deep_color(min_sat: float = 0.9, lum=0.75):
     sat = random.uniform(min_sat, 1)
-    hue = random.uniform(0, max_lum)
-    lum = random.uniform(0, 1)
     return get_rgb_bytes(hue, sat, lum)
 
 
