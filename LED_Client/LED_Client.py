@@ -3,7 +3,10 @@
 
 from tornado.ioloop import IOLoop, PeriodicCallback
 from tornado import gen
-from tornado.websocket import websocket_connect
+from tornado.websocket import websocket_connect, WebSocketHandler
+import asyncio
+Future = asyncio.Future
+import typing
 
 ROUTE = "ws://192.168.1.106:8888/leds"
 
@@ -18,7 +21,7 @@ class Client(object):
         self.ioloop.start()
 
     @gen.coroutine
-    def connect(self):
+    def connect(self) -> "Future[WebSocketHandler]":
         print("trying to connect")
         try:
             self.ws = yield websocket_connect(self.url)
@@ -43,6 +46,12 @@ class Client(object):
         else:
             self.ws.write_message("keep alive")
 
+# TODO: test this
+async def connect_ws() -> WebSocketHandler:
+    client = Client(ROUTE, 5)
+    return await client.connect()
 
 if __name__ == "__main__":
-    client = Client(ROUTE, 5)
+    ws = connect_ws()
+    ws.write_message("cycle:3")
+
