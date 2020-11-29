@@ -162,6 +162,7 @@ def main():
         for a in actions:
             a.tick(curr_time)
         pixels.show()
+        time.sleep(0.001) # without this dt is sometimes too small
 
 
 try:
