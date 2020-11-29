@@ -4,7 +4,6 @@ import pytweening
 
 from Utils.math_util import *
 from led_actions.LedActionPingPong import LedActionPingPong
-from events.events import Events
 
 
 # work with deltas so it reacts to outside changes
