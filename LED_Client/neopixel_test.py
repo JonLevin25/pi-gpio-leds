@@ -105,6 +105,14 @@ def colorREPL():
         pixels.fill(parsed_inp)
         pixels.show()
 
+# fills the strip one by one. Could be nice if async so I can send waves on top of each other
+def color_chase(pixels, color, pix_wait, cycle_wait):
+    for i in range(len(pixels)):
+        pixels[i] = color
+        time.sleep(pix_wait)
+        pixels.show()
+    time.sleep(cycle_wait)
+
 
 def main():
     pixels.brightness = 0.6
@@ -122,12 +130,6 @@ def main():
 
     # pixels[num_pixels // 2 + 1: num_pixels] = COL_RED
 
-    # from found_example_code.adafruit_learn_neopixel.adafruit_neopixel_annotated import color_chase
-    # while True:
-    #     color_chase(pixels, COL_RED, 0.01)
-    #     color_chase(pixels, COL_GREEN, 0.01)
-    #     color_chase(pixels, COL_BLUE, 0.01)
-
     def on_brightness_halfcycle(i: int):
         print(i)
         if i % 2 == 0:
@@ -143,6 +145,11 @@ def main():
     print('{} actions set. Initializing'.format(len(actions)))
 
     curr_time = time.time()
+
+    # while True:
+    #     col = rand_deep_color(lum=1.0)
+    #     color_chase(pixels, col, pix_wait=0.001, cycle_wait=0.5)
+
     for a in actions:
         a.run(curr_time)
 
