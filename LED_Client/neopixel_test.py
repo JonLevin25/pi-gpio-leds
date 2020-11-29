@@ -65,6 +65,11 @@ def action_bright_pingpong(half_cycle_time, callback=None):
     return BrightnessPingPong(pixels, half_cycle_time=half_cycle_time, min_brightness=0.0, max_brightness=0.45,
                               ease_func=pytweening.easeInOutCubic, on_halfcycle_finished=callback)
 
+def action_bright_pingpong_2(half_cycle_time, callback=None):
+    # dont set min brighness to 0 since that messes up hue calculation for other funcs
+    return BrightnessPingPong(pixels, half_cycle_time=half_cycle_time, min_brightness=0.3, max_brightness=0.8,
+                              ease_func=pytweening.easeInOutCubic, on_halfcycle_finished=callback)
+
 
 def rand_deep_color(min_sat: float = 0.9, lum=0.75):
     sat = random.uniform(min_sat, 1)
@@ -117,30 +122,26 @@ def color_chase(pixels, color, pix_wait, cycle_wait):
 def main():
     pixels.brightness = 0.6
     # colorREPL()
-    # set_sequential(pixels, 0)
     pixels[:] = [COL_RED for i in range(len(pixels))]
     # set_random(pixels)
+    set_sequential(pixels, 0)
     time.sleep(2)
     pixels.show()
-
-    # print(random.__file__)
-    def darker_rand_func():
-        result = tuple((int(random.uniform(0, 120)) for i in range(3)))
-        return result
 
     # pixels[num_pixels // 2 + 1: num_pixels] = COL_RED
 
     def on_brightness_halfcycle(i: int):
         print(i)
         if i % 2 == 0:
-            set_random(pixels, rand_func_max_colors(5, rand_deep_color))
-            # set_random(pixels, rand_func_max_colors(5))
+            set_random(pixels, rand_func_max_colors(4, rand_deep_color))
+            # set_random(pixels, rand_func_max_colors(5, rand_color))
 
+    time.sleep(2)
     print('creating actions to run')
     actions = {
-        action_bright_pingpong(3.076923077*0.5, on_brightness_halfcycle),
-        # action_colorcycle(5),
-
+        # action_bright_pingpong(4, on_brightness_halfcycle),
+        action_bright_pingpong_2(4),
+        action_colorcycle(5),
     }
     print('{} actions set. Initializing'.format(len(actions)))
 
