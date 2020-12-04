@@ -13,8 +13,8 @@ TODO: continue searching for good python tween library, or partial impl myself
 TODO:  convert brightness pingpong to use delta/tween (how does DOTween handle it?)
 
 Resources
-https://easings.net
-\[?\] http://robertpenner.com/easing/penner_chapter7_tweening.pdf
-http://dotween.demigiant.com/
+* https://easings.net
+* \[?\] http://robertpenner.com/easing/penner_chapter7_tweening.pdf
+* http://dotween.demigiant.com/
 
 
