@@ -97,6 +97,7 @@ def colorREPL():
         pixels.fill(parsed_inp)
         pixels.show()
 
+
 # fills the strip one by one. Could be nice if async so I can send waves on top of each other
 def color_chase(pixels, color, pix_wait, cycle_wait):
     for i in range(len(pixels)):
