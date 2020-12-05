@@ -1,5 +1,5 @@
 import unittest
-from led_actions.NeoPixelRange import NeoPixelRange
+from led_actions.NeoPixelWrappers import NeoPixelRange
 from led_actions.NeoPixelTween import *
 
 

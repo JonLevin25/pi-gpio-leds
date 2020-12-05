@@ -1,7 +1,7 @@
 import pytweening
 import board
 from neopixel import NeoPixel
-from led_actions.NeoPixelRange import NeoPixelRange
+from led_actions.NeoPixelWrappers import NeoPixelRange
 import time
 
 from random import Random
@@ -154,13 +154,13 @@ def main():
 
 
 try:
-    # main()
+    main()
 
-    print('START')
-    r = NeoPixelRange(pixels)
-    r.set_colors(COL_RED)
-    r.show()
-    print('END')
+    # print('START')
+    # r = NeoPixelRange(pixels)
+    # r.set_colors(COL_RED)
+    # r.show()
+    # print('END')
 
     # just here to prototype stuff instead of main quickly
     while True:
