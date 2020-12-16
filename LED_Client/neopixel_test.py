@@ -10,6 +10,7 @@ from Utils.color_util import *
 from Utils.math_util import *
 from led_actions.BrightnessPingPongAction import BrightnessPingPong
 from led_actions.ColorCycleAction import ColorCycle
+from led_actions.BulgeLedAction import Bulge
 
 ADDRESSABLE_LEDS = 30  # (30/m * 5m) / 3 [Addr is Groups of 3]
 
@@ -22,10 +23,23 @@ random = Random()
 
 
 def set_sequential(pixels: NeoPixel, offset: float = 0.0):
+    print('set sequential (offset: {})'.format(offset))
     num_pixels = len(pixels)
     for i in range(num_pixels):
         hue = (i / num_pixels) + offset
         pixels[i] = get_rgb_bytes(hue, light=pixels.brightness)
+
+
+def set_split(pixels: NeoPixel, offset: float = 0.0):
+    print('set split (offset: {})'.format(offset))
+    num_pixels = len(pixels)
+    half = num_pixels // 2
+
+    halfLights = [get_rgb_bytes(i / half) for i in range(half)]
+    print(halfLights)
+    print(len(halfLights), len(pixels))
+    pixels[:half] = halfLights
+    pixels[half:] = list(reversed(halfLights))
 
 
 def set_random(pixels: NeoPixel, rand_color_func: Callable[[], Tuple[int]]):
@@ -112,9 +126,11 @@ def main():
     # colorREPL()
     pixels[:] = [COL_RED for i in range(len(pixels))]
     # set_random(pixels)
-    set_sequential(pixels, 0)
-    time.sleep(2)
-    pixels.show()
+    # set_sequential(pixels, 0)
+    # set_split(pixels, 0.0)
+    # pixels.show()
+    # time.sleep(2)
+    # return
 
     # pixels[num_pixels // 2 + 1: num_pixels] = COL_RED
 
@@ -126,10 +142,12 @@ def main():
 
     time.sleep(2)
     print('creating actions to run')
+
     actions = {
         # action_bright_pingpong(4, on_brightness_halfcycle),
-        action_bright_pingpong_2(4),
-        action_colorcycle(5),
+        # action_bright_pingpong_2(4),
+        # action_colorcycle(5),
+        Bulge(8, pixels, COL_RED, rand_deep_color, 0.55)
     }
     print('{} actions set. Initializing'.format(len(actions)))
 

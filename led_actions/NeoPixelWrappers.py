@@ -18,9 +18,26 @@ def _get_cycled_colors(value, length) -> List[Sized]:
     return list(itertools.islice(itertools.cycle(value), length))
 
 
+class NewRangeSketch(object):
+    @classmethod
+    def PixelWrapper(cls, pixels: NeoPixel) -> 'NewRangeSketch':
+        return NewRangeSketch()
+
+    @classmethod
+    def TempBufferWrapper(cls, buffer: List) -> 'NewRangeSketch':
+        pass
+
+    @classmethod
+    def WrapperWrapper(cls, wrapper: 'NewRangeSketch') -> 'NewRangeSketch':
+        pass
+
+    def __init__(self):
+        pass
+
+
 # TODO: Sort out code/API duplication (NeoPixelBuffer/NeoPixelRange)
 class NeoPixelBuffer:
-    def __init__(self, len_pixels: Union[int, NeoPixel], pixel_range: Union[int, slice] = None):
+    def __init__(self, len_pixels: int, pixel_range: Union[int, slice] = None):
         if not len_pixels:
             raise ValueError('No pixel length given!')
         if pixel_range is None:
@@ -28,23 +45,14 @@ class NeoPixelBuffer:
         if not isinstance(pixel_range, (int, slice)):
             raise ValueError('Pixel indices must be an int or a slice!')
 
-        # if pixels were given instead of just length, get their length dynamically when needed
-        if isinstance(len_pixels, NeoPixel):
-            self.pixels = len_pixels
-        else:
-            self.len_pixels = len_pixels
-
+        self.buffer_len = len_pixels
         self.pixelRange = pixel_range if isinstance(pixel_range, slice) else slice(0, pixel_range)
 
-    def _get_buffer_len(self):
-        return len(self.pixels) if self.pixels else self.len_pixels
-
     def set_range_buffer(self, values: Union[Color, Iterable[Color]]):
-        self._set_buffer(self._get_buffer_len(), values)
+        self._set_buffer(self.buffer_len, values)
 
     def get_all_pixels(self) -> List[Color]:
-        buffer_len = self._get_buffer_len()
-        values = [None for i in range(buffer_len)]  # type: List[any]
+        values = [None for i in range(self.buffer_len)]  # type: List[any]
         values[self.pixelRange] = self._buffer
         return values
 
@@ -79,6 +87,16 @@ class NeoPixelRange:
 
     def get_colors(self):
         return self.pixels[self.pixelRange]
+
+    def __setitem__(self, index, val):
+        if isinstance(index, slice):
+            start, stop, step = index.indices(self._pixels)
+            for val_i, in_i in enumerate(range(start, stop, step)):
+                r, g, b, w = self._parse_color(val[val_i])
+                self._set_item(in_i, r, g, b, w)
+        else:
+            r, g, b, w = self._parse_color(val)
+            self._set_item(index, r, g, b, w)
 
     def set_colors(self, values: Union[Color, Iterable[Color]]):
         # TODO: optimize if needed

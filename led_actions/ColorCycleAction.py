@@ -5,10 +5,11 @@ import pytweening
 
 from Utils.color_util import *
 from led_actions.LedAction import LedAction
+from led_actions.NeoPixelWrappers import NeoPixelRange
 
 
 class ColorCycle(LedAction):
-    def __init__(self, pixels: neopixel.NeoPixel, cycle_time: float, ascending=True,
+    def __init__(self, pixels: Union[neopixel.NeoPixel, NeoPixelRange], cycle_time: float, ascending=True,
                  ease_func: Callable[[float], float] = pytweening.linear):
         super().__init__(pixels=pixels, iteration_time=cycle_time)
         self.ascending = ascending
