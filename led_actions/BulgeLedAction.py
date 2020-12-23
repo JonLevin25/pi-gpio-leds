@@ -4,6 +4,7 @@ import neopixel
 import pytweening
 
 from Utils.color_util import *
+from Utils.math_util import *
 from led_actions.LedAction import LedAction
 from led_actions.NeoPixelWrappers import NeoPixelRange
 from random import Random
@@ -21,7 +22,7 @@ def mapTo(x: float, srcRange: Tuple[float, float], destRange: Tuple[float, float
     return destRange[0] + (t * destDelta)
 
 
-def color_lerp(t: float, from_col: Color, to_col: Color):
+def color_lerp_hsv(t: float, from_col: Color, to_col: Color):
     f_h, f_s, f_l = get_hsv(from_col)
     t_h, t_s, t_l = get_hsv(to_col)
 
@@ -37,6 +38,21 @@ def color_lerp(t: float, from_col: Color, to_col: Color):
     if (h < 0):
         h += 256
     return get_rgb_bytes(h, s, l)
+
+
+def color_lerp_rgb(t: float, from_col: Color, to_col: Color):
+    f_r, f_g, f_b = from_col
+    t_r, t_g, t_b = to_col
+
+    raw_r = lerpInt(t, f_r, t_r)
+    raw_g = lerpInt(t, f_g, t_g)
+    raw_b = lerpInt(t, f_b, t_b)
+
+    r = clampInt(raw_r, 0, 255)
+    g = clampInt(raw_g, 0, 255)
+    b = clampInt(raw_b, 0, 255)
+
+    return (r, g, b)
 
 
 class Bulge(LedAction):
@@ -112,9 +128,9 @@ class Bulge(LedAction):
         end_t = start_t + totalDuration
         switch_t = start_t + 0.5 * totalDuration
 
-        def tween(progress: float, from_col: Color, to_col: Color, ease: Callable[[float], float] = pytweening.linear):
+        def tween(progress: float, from_col: RGBBytesColor, to_col: RGBBytesColor, ease: Callable[[float], float] = pytweening.linear):
             progress = ease(progress)
-            return color_lerp(progress, from_col, to_col)
+            return color_lerp_rgb(progress, from_col, to_col)
 
         def update_tween(t: float):
             is_done = t > end_t

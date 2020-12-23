@@ -35,7 +35,7 @@ class BrightnessPingPong(LedActionPingPong):
 
     def get_b(self, norm_t: float) -> float:
         eased_t = self.ease_func(norm_t)
-        b = lerp(eased_t, self.min_brightness, self.max_brightness)
+        b = lerpFloat(eased_t, self.min_brightness, self.max_brightness)
         return self.clamp_brightness(b)
 
     @property

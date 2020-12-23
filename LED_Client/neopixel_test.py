@@ -14,8 +14,10 @@ from led_actions.BulgeLedAction import Bulge
 
 ADDRESSABLE_LEDS = 30  # (30/m * 5m) / 3 [Addr is Groups of 3]
 
+import neopixel
+
 print('Setting up neopixel + clearing lights')
-pixels = NeoPixel(board.D18, ADDRESSABLE_LEDS, brightness=1, auto_write=False)
+pixels = NeoPixel(board.D18, ADDRESSABLE_LEDS, brightness=1, auto_write=False, pixel_order="BRG")
 pixels.fill(COL_BLACK)
 pixels.show()
 
@@ -54,6 +56,7 @@ def rand_func_max_colors(size: int, inner_rand_color: Callable[[], Tuple[int]] =
         raise ValueError
     set_ = [inner_rand_color() for i in range(size)]
     return lambda: rand_colors_from_list(set_)
+    ht
 
 
 def rand_colors_from_list(color_set: Sequence[Tuple[int]]) -> Tuple[int]:
@@ -122,9 +125,21 @@ def color_chase(pixels, color, pix_wait, cycle_wait):
 
 
 def main():
+    START_COL = html_to_rgb_bytes("#ff4900")
     pixels.brightness = 0.6
+    pixels.fill(START_COL)
+    pixels.show()
+
+    # pixels.fill((255, 0, 0))
+    # pixels.show()
+    # time.sleep(0.5)
+    # pixels.fill((0, 255, 0))
+    # pixels.show()
+    # time.sleep(0.5)
+    # pixels.fill((0, 0, 255))
+    # pixels.show()
     # colorREPL()
-    pixels[:] = [COL_RED for i in range(len(pixels))]
+
     # set_random(pixels)
     # set_sequential(pixels, 0)
     # set_split(pixels, 0.0)
@@ -147,7 +162,7 @@ def main():
         # action_bright_pingpong(4, on_brightness_halfcycle),
         # action_bright_pingpong_2(4),
         # action_colorcycle(5),
-        Bulge(8, pixels, COL_RED, rand_deep_color, 0.55)
+        Bulge(2, pixels, START_COL, rand_deep_color, 0.75)
     }
     print('{} actions set. Initializing'.format(len(actions)))
 

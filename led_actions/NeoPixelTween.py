@@ -4,7 +4,7 @@ from neopixel import NeoPixel
 from led_actions.NeoPixelWrappers import NeoPixelRange
 from pytweening import linear
 
-Color = Union[Tuple[int], List[int]]
+Color = Union[Tuple[int, int, int], List[int]]
 T = TypeVar('T')
 TGetter = Callable[[], T]
 TSetter = Callable[[T], None]
