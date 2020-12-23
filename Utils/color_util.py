@@ -1,10 +1,12 @@
-from typing import Iterable, List, Tuple, Union
+from typing import Iterable, List, Tuple, Union, Callable
 
 from colorzero.conversions import hsv_to_rgb, rgb_to_hsv, html_to_rgb_bytes
 from random import random
 
 RGBBytesColor = Union[Tuple[int, int, int], List[int]]
 HSVColor = Union[Tuple[float, float, float], List[float]]
+
+ColorGetter = Callable[[], RGBBytesColor]
 
 # Colors
 COL_BLACK = (0, 0, 0)

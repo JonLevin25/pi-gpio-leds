@@ -55,6 +55,26 @@ def color_lerp_rgb(t: float, from_col: Color, to_col: Color):
     return (r, g, b)
 
 
+class PrintAvg:
+    def __init__(self, samples, every):
+        self.rolling = []
+        self.samples = samples
+        self.every = every
+        self.counter = 0
+
+    def tick(self, value):
+        self.rolling.append(value)
+        self.counter += 1
+
+        if len(self.rolling) <= self.samples:
+            return
+
+        self.rolling.pop(0)
+
+        if self.counter % self.every == 0:
+            print(f'avg: {sum(self.rolling) / self.samples}')
+
+
 class Bulge(LedAction):
     def __init__(self,
                  bulge_time: float,
@@ -72,6 +92,7 @@ class Bulge(LedAction):
         self.base_color = base_color
         self.rand_func = rand_func
         self._running_tweens = []
+        self.printavg = PrintAvg(30, 100)
 
     def _start(self, t: float):
         pass
@@ -79,9 +100,11 @@ class Bulge(LedAction):
     def _update(self, t: float, dt: float):
 
         # TODO: better random algo?
-        chance = dt * self.bulge_chance
+        chance = self.bulge_chance
         rand = random.random()
-        should_bulge = chance > rand
+
+        should_bulge = rand < chance
+        self.printavg.tick(chance)
         if should_bulge:
             led_to_bulge = self.get_rand_led_idx()
             if led_to_bulge != -1:
