@@ -183,7 +183,7 @@ def main(pixels):
     actions = {
         # Actions_Breathe.breathe_rand(pixels, rand_deep_color, 4),
         # action_colorcycle(5),
-        Bulge(2, pixels, START_COL, rand_deep_color, 0.002),
+        Bulge(3, pixels, START_COL, rand_deep_color, 0.0035), # TODO: Easing
     }
 
     event_loop(pixels, actions)
