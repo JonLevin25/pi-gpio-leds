@@ -9,8 +9,6 @@ from led_actions.LedAction import LedAction
 from led_actions.NeoPixelWrappers import NeoPixelRange
 from random import Random
 
-Color = Union[Tuple[int, int, int], List[int]]
-
 random = Random()
 
 
@@ -22,7 +20,7 @@ def mapTo(x: float, srcRange: Tuple[float, float], destRange: Tuple[float, float
     return destRange[0] + (t * destDelta)
 
 
-def color_lerp_hsv(t: float, from_col: Color, to_col: Color):
+def color_lerp_hsv(t: float, from_col: RGBBytesColor, to_col: RGBBytesColor):
     f_h, f_s, f_l = get_hsv(from_col)
     t_h, t_s, t_l = get_hsv(to_col)
 
@@ -40,7 +38,7 @@ def color_lerp_hsv(t: float, from_col: Color, to_col: Color):
     return get_rgb_bytes(h, s, l)
 
 
-def color_lerp_rgb(t: float, from_col: Color, to_col: Color):
+def color_lerp_rgb(t: float, from_col: RGBBytesColor, to_col: RGBBytesColor):
     f_r, f_g, f_b = from_col
     t_r, t_g, t_b = to_col
 
@@ -79,8 +77,8 @@ class Bulge(LedAction):
     def __init__(self,
                  bulge_time: float,
                  pixels: Union[neopixel.NeoPixel, NeoPixelRange],
-                 base_color: Color,
-                 rand_func: Callable[[], Color],
+                 base_color: RGBBytesColor,
+                 rand_func: Callable[[], RGBBytesColor],
                  bulge_chance: float,
                  ):
 
@@ -146,7 +144,7 @@ class Bulge(LedAction):
         return i
 
 
-    def _tweenToThenTo(self, start_t: float, pixIdx: int, target1: Color, target2: Color, totalDuration: float):
+    def _tweenToThenTo(self, start_t: float, pixIdx: int, target1: RGBBytesColor, target2: RGBBytesColor, totalDuration: float):
         startCol = self.pixels[pixIdx]
         end_t = start_t + totalDuration
         switch_t = start_t + 0.5 * totalDuration
