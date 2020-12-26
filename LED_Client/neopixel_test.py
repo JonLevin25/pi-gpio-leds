@@ -10,6 +10,7 @@ from led_actions.Basic.LambdaAction import LambdaAction
 from led_actions.Basic.LedAction import LedAction
 from led_actions.BrightnessPingPongAction import BrightnessPingPong
 from led_actions.ColorCycleAction import ColorCycle
+from led_actions.FillGapsAction import FillGapsAction
 from led_actions.SetRangesAction import SetRangesAction
 from led_actions.Basic.NeoPixelWrappers import NeoPixelRange
 
@@ -187,34 +188,17 @@ def main(pixels: NeoPixel):
 
     print('creating actions to run')
 
-    def toggle_lights(iters):
-        if iters % 2 == 1:
-            return
-        print('toggle. 4ths enabled: {}, between enabled: {}'.format(turn_off_4ths.enabled,
-                                                                     turn_off_between_4ths.enabled))
-        turn_off_4ths.toggle_enabled()
-        turn_off_between_4ths.toggle_enabled()
-
-    fourths = range(0, len(pixels), 4)
-    between_4ths_ranges = tuple(map(lambda i: NeoPixelRange(pixels, slice(i, i + 3)), fourths))
-
-    breathe_action = BrightnessPingPong(pixels, half_cycle_time=1.8,
-                                        min_brightness=0.2, max_brightness=1,
-                                        on_halfcycle_finished=toggle_lights)
-
-    set_colors_lambda = lambda: Actions_Basic.set_sequential(pixels, 0, 0.1)
-    set_colors = LambdaAction.start_and_update(set_colors_lambda)
-
-    turn_off_4ths = SetRangesAction(NeoPixelRange(pixels, slice(3, None, 4)), COL_BLACK)
-    turn_off_between_4ths = SetRangesAction(between_4ths_ranges, COL_BLACK)
-
-    turn_off_between_4ths.enabled = False
+    set_colors_action = lambda: Actions_Basic.set_sequential(pixels, 0, 0.1)
+    fillgapsaction = FillGapsAction(pixels, set_colors_action,
+                                    fill_length=3,
+                                    gap_length=1,
+                                    half_cycle_time=0.2,
+                                    min_brightness=0.2,
+                                    max_brightness=1.0,
+                                    on_halfcycle=None)
 
     actions = [
-        set_colors,
-        breathe_action,
-        turn_off_4ths,
-        turn_off_between_4ths,
+        fillgapsaction
         # Actions_Breathe.breathe_rand(pixels, rand_deep_color, 4),
         # Actions_ColorCycle.colorcylce(pixels, 5),
         # Bulge(3, pixels, START_COL, rand_deep_color, 0.0055), # TODO: Easing
