@@ -1,11 +1,11 @@
-from typing import List, Iterable, Union
+from typing import Iterable, Union
 
 import neopixel
 
 from Utils.color_util import RGBBytesColor
 from Utils.misc_util import is_iter
-from led_actions.LedAction import LedAction
-from led_actions.NeoPixelWrappers import NeoPixelRange
+from led_actions.Basic.LedAction import LedAction
+from led_actions.Basic.NeoPixelWrappers import NeoPixelRange
 
 
 class SetRangesAction(LedAction):

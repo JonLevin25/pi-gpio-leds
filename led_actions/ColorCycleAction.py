@@ -1,11 +1,9 @@
-from typing import *
-
 import neopixel
 import pytweening
 
 from Utils.color_util import *
-from led_actions.LedAction import LedAction
-from led_actions.NeoPixelWrappers import NeoPixelRange
+from led_actions.Basic.LedAction import LedAction
+from led_actions.Basic.NeoPixelWrappers import NeoPixelRange
 
 
 class ColorCycle(LedAction):

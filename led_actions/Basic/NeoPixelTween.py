@@ -1,7 +1,7 @@
 from typing import Union, Tuple, List, Iterable, Callable, TypeVar, Generic
 
 from neopixel import NeoPixel
-from led_actions.NeoPixelWrappers import NeoPixelRange
+from led_actions.Basic.NeoPixelWrappers import NeoPixelRange
 from pytweening import linear
 
 Color = Union[Tuple[int, int, int], List[int]]

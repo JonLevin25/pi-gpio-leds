@@ -1,6 +1,5 @@
 import unittest
-from led_actions.NeoPixelWrappers import NeoPixelRange
-from led_actions.NeoPixelTween import *
+from led_actions.Basic.NeoPixelTween import *
 
 
 class TestGenericTween(unittest.TestCase):

@@ -1,10 +1,6 @@
-from typing import Union, Iterable, Callable
+from typing import Callable
 
-import neopixel
-
-from Utils.color_util import RGBBytesColor
-from led_actions.LedAction import LedAction
-from led_actions.NeoPixelWrappers import NeoPixelRange
+from led_actions.Basic.LedAction import LedAction
 
 VoidFn = Callable[[], None]
 

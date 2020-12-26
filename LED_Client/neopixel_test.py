@@ -6,13 +6,12 @@ import time
 from random import Random
 from typing import *
 from Utils.color_util import *
-from led_actions.LambdaAction import LambdaAction
-from led_actions.LedAction import LedAction
+from led_actions.Basic.LambdaAction import LambdaAction
+from led_actions.Basic.LedAction import LedAction
 from led_actions.BrightnessPingPongAction import BrightnessPingPong
 from led_actions.ColorCycleAction import ColorCycle
-from led_actions.BulgeLedAction import Bulge
 from led_actions.SetRangesAction import SetRangesAction
-from led_actions.NeoPixelWrappers import NeoPixelRange
+from led_actions.Basic.NeoPixelWrappers import NeoPixelRange
 
 random = Random()
 

@@ -12,7 +12,20 @@ class LedAction:
         self.pixels = pixels
         self.iteration_time = iteration_time
         self.norm_t_offset = 0
-        self.enabled = True
+        self._enabled = True
+        self._didstart = False
+
+    @property
+    def enabled(self, value: bool):
+        self._enabled = value
+
+        # TODO: autostart on enable (Requires Time DI/global config)
+        # if value and not self._didstart:
+        #     self._start(Time.now)
+
+    @enabled.getter
+    def enabled(self):
+        return  self._enabled
 
     def toggle_enabled(self):
         self.enabled = not self.enabled
@@ -29,7 +42,12 @@ class LedAction:
     def run(self, curr_time: float):
         self.start_time = curr_time
         self.prev_tick = curr_time
+
+        if not self.enabled:
+            return
+
         self._start(curr_time)
+        self._didstart = True
 
     @property
     def norm_t_offset(self) -> float:
