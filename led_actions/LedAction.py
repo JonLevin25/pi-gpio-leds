@@ -12,8 +12,16 @@ class LedAction:
         self.pixels = pixels
         self.iteration_time = iteration_time
         self.norm_t_offset = 0
+        self.enabled = True
+
+    def toggle_enabled(self):
+        self.enabled = not self.enabled
+        return self.enabled
 
     def tick(self, curr_time: float):
+        if not self.enabled:
+            return
+
         dt = curr_time - self.prev_tick
         self._update(curr_time, dt)
         self.prev_tick = curr_time
