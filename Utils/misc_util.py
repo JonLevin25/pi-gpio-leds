@@ -1,3 +1,6 @@
+from typing import Callable
+
+FnVoid = Callable[[], None]
 
 def is_iter(obj):
     if obj is None:

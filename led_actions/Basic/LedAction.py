@@ -16,16 +16,16 @@ class LedAction:
         self._didstart = False
 
     @property
+    def enabled(self):
+        return self._enabled
+
+    @enabled.setter
     def enabled(self, value: bool):
         self._enabled = value
 
         # TODO: autostart on enable (Requires Time DI/global config)
         # if value and not self._didstart:
         #     self._start(Time.now)
-
-    @enabled.getter
-    def enabled(self):
-        return  self._enabled
 
     def toggle_enabled(self):
         self.enabled = not self.enabled
