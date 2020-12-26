@@ -6,12 +6,16 @@ import time
 from random import Random
 from typing import *
 from Utils.color_util import *
+from led_actions.LambdaAction import LambdaAction
 from led_actions.LedAction import LedAction
 from led_actions.BrightnessPingPongAction import BrightnessPingPong
 from led_actions.ColorCycleAction import ColorCycle
 from led_actions.BulgeLedAction import Bulge
+from led_actions.SetRangesAction import SetRangesAction
+from led_actions.NeoPixelWrappers import NeoPixelRange
 
 random = Random()
+
 
 class Actions_Basic:
     @classmethod
@@ -21,11 +25,12 @@ class Actions_Basic:
             pixels.show()
 
     @classmethod
-    def set_sequential(cls, pixels: NeoPixel, offset: float = 0.0):
-        print('set sequential (offset: {})'.format(offset))
+    def set_sequential(cls, pixels: NeoPixel, start_hue: float = 0, end_hue: float = 1):
+        print('set sequential (start: {} -> end: {})'.format(start_hue, end_hue))
         num_pixels = len(pixels)
         for i in range(num_pixels):
-            hue = (i / num_pixels) + offset
+            t = (i / num_pixels)
+            hue = start_hue + t * (end_hue - start_hue)
             pixels[i] = get_rgb_bytes(hue, light=pixels.brightness)
 
     @classmethod
@@ -121,7 +126,6 @@ def rand_func_max_colors(size: int, inner_rand_color: Callable[[], RGBBytesColor
         raise ValueError
     set_ = [inner_rand_color() for i in range(size)]
     return lambda: rand_colors_from_list(set_)
-    ht
 
 
 def rand_colors_from_list(color_set: Sequence[RGBBytesColor]) -> RGBBytesColor:
@@ -168,22 +172,49 @@ def init():
     return pixels
 
 
-def main(pixels):
+def main(pixels: NeoPixel):
     golden_yellow = html_to_rgb_bytes("#ff9900")
     red = (255, 0, 00)
     START_COL = red
-    Actions_Basic.autoshow(pixels, True)
+    # Actions_Basic.autoshow(pixels, True)
 
     pixels.brightness = 0.6
     pixels.fill(START_COL)
 
-    time.sleep(2)
+    prange = NeoPixelRange(pixels, slice(3, len(pixels), 4))
+
+    prange.set_colors(COL_BLACK)
+    prange.show()
+
     print('creating actions to run')
 
+    def toggle_lights(iters):
+        print('toggle. 4ths enabled: {}, between enabled: {}'.format(turn_off_4ths.enabled,
+                                                                     turn_off_between_4ths.enabled))
+        turn_off_4ths.toggle_enabled()
+        turn_off_between_4ths.toggle_enabled()
+
+    fourths = range(0, len(pixels), 4)
+    between_4ths_ranges = tuple(map(lambda i: NeoPixelRange(pixels, slice(i, i + 3)), fourths))
+
+    breathe_action = Actions_Breathe.bright_pingpong_2(pixels, 4, toggle_lights)
+
+    set_colors_lambda = lambda: Actions_Basic.set_sequential(pixels, 0, 0.1)
+    set_colors = LambdaAction.start_and_update(set_colors_lambda)
+
+    turn_off_4ths = SetRangesAction(NeoPixelRange(pixels, slice(3, None, 4)), COL_BLACK)
+    turn_off_between_4ths = SetRangesAction(between_4ths_ranges, COL_BLACK)
+
+    turn_off_between_4ths.enabled = False
+
     actions = {
+        set_colors,
+        breathe_action,
+        turn_off_4ths,
+        turn_off_between_4ths,
         # Actions_Breathe.breathe_rand(pixels, rand_deep_color, 4),
-        # action_colorcycle(5),
-        Bulge(3, pixels, START_COL, rand_deep_color, 0.0035), # TODO: Easing
+        # Actions_ColorCycle.colorcylce(pixels, 5),
+        # Bulge(3, pixels, START_COL, rand_deep_color, 0.0055), # TODO: Easing
     }
 
     event_loop(pixels, actions)
