@@ -1,8 +1,13 @@
+import typing
 from operator import __getitem__
 
+from adafruit_pypixelbuf import PixelBuf
 from neopixel import NeoPixel
 import itertools
-from typing import Union, Iterable, Sized, Iterator, List, Tuple
+from typing import Union, Iterable, Sized, Iterator, List, Tuple, Protocol
+
+from Utils.color_util import RGBBytesColor
+from Utils.misc_util import slice_len
 
 Color = Union[List[int], Tuple[int]]
 
@@ -35,62 +40,34 @@ class NewRangeSketch(object):
         pass
 
 
-# TODO: Sort out code/API duplication (NeoPixelBuffer/NeoPixelRange)
-class NeoPixelBuffer:
-    def __init__(self, len_pixels: int, pixel_range: Union[int, slice] = None):
-        if not len_pixels:
-            raise ValueError('No pixel length given!')
-        if pixel_range is None:
-            pixel_range = slice(None, None)  # entire range
-        if not isinstance(pixel_range, (int, slice)):
-            raise ValueError('Pixel indices must be an int or a slice!')
+### Python 3.8+ only
+#
+# class IColorBuffer(Protocol):
+#     def __len__(self):
+#         pass
+#     def __getitem__(self, index) -> any:
+#         pass
+#     def __setitem__(self, index, value: any) -> None:
+#         pass
 
-        self.buffer_len = len_pixels
-        self.pixelRange = pixel_range if isinstance(pixel_range, slice) else slice(0, pixel_range)
-
-    def set_range_buffer(self, values: Union[Color, Iterable[Color]]):
-        self._set_buffer(self.buffer_len, values)
-
-    def get_all_pixels(self) -> List[Color]:
-        values = [None for i in range(self.buffer_len)]  # type: List[any]
-        values[self.pixelRange] = self._buffer
-        return values
-
-    def _set_buffer(self, buffer_len, values: Union[Color, Iterable[Color]]):
-        # TODO: optimize if needed
-
-        # NeoPixels require indexable values. if they're an iterator of colors and length is OK, simply set them.
-        # Otherwise, enumerate them into a list and cycle them if there aren't enough
-        if _is_multi_colors(values) and len(values) >= buffer_len:
-            self._buffer = values[:buffer_len]
-        else:
-            cycled_values = list(_get_cycled_colors(values, buffer_len))
-            self._buffer = cycled_values
-
-
-# TODO: Sort out code/API duplication (NeoPixelBuffer/NeoPixelRange)
 class NeoPixelRange:
-    def __init__(self, pixels: NeoPixel, pixel_range: Union[int, slice] = None):
-        if not pixels:
-            raise ValueError('No pixels given!')
-        if pixel_range is None:
-            pixel_range = slice(None, None)  # entire range
-        if not isinstance(pixel_range, (int, slice)):
-            raise ValueError('Pixel indices must be an int or a slice!')
+    def __init__(self, inner_buffer: Union["NeoPixelRange", PixelBuf, List[RGBBytesColor]], range_slice: slice = None):
+        if not inner_buffer:
+            raise ValueError('No inner buffer given!')
 
-        self.pixels = pixels
-        self.pixelRange = pixel_range if isinstance(pixel_range, slice) else slice(0, pixel_range)
+        self._inner_buffer = inner_buffer
+        self.range_slice = range_slice or slice(None)
 
     def __len__(self):
-        pix_len = len(self.pixels)
-        return len(self.pixelRange.indices(pix_len))
+        inner_len = len(self._inner_buffer)
+        return slice_len(self.range_slice, inner_len)
 
-    def get_colors(self):
-        return self.pixels[self.pixelRange]
+    def __getitem__(self, index, val):
+
 
     def __setitem__(self, index, val):
         if isinstance(index, slice):
-            start, stop, step = index.indices(self._pixels)
+            start, stop, step = index.indices()
             for val_i, in_i in enumerate(range(start, stop, step)):
                 r, g, b, w = self._parse_color(val[val_i])
                 self._set_item(in_i, r, g, b, w)
@@ -98,9 +75,14 @@ class NeoPixelRange:
             r, g, b, w = self._parse_color(val)
             self._set_item(index, r, g, b, w)
 
+    def get_colors(self):
+        return self._inner_buffer[self.range_slice]
+
+    # TODO: Getitem
+
     def set_colors(self, values: Union[Color, Iterable[Color]]):
         # TODO: optimize if needed
-        pix_len = len(self.pixels)
+        pix_len = len(self._inner_buffer)
 
         # NeoPixels require indexable values. if they're an iterator of colors and length is OK, simply set them.
         # Otherwise, enumerate them into a list and cycle them if there aren't enough
@@ -111,7 +93,27 @@ class NeoPixelRange:
             self._set_colors(cycled_values)
 
     def _set_colors(self, values):
-        self.pixels[self.pixelRange] = values
+        self._inner_buffer[self.range_slice] = values
 
     def show(self):
-        self.pixels.show()
+        self._inner_buffer.show()
+
+class NeoPixelBuffer:
+    """
+    A simple yet powerful indirection for storing pixel info.
+    Can hold an array for later usage/blending, a NeoPixelRange that
+    """
+
+    # Once I can use protocols, should take anything that supports:
+    # len, getitem(int/slice) -> Color, setitem(int/slice, color)
+    def __init__(self, inner_buffer: Union["NeoPixelBuffer", NeoPixelRange, List[RGBBytesColor]]):
+        self.inner_buffer = inner_buffer
+
+    def __len__(self):
+        return len(self.inner_buffer)
+
+    def __getitem__(self, index: Union[int, slice]):
+        return self.inner_buffer[index]
+
+    def __setitem__(self, index: Union[int, slice], value: RGBBytesColor):
+        self.inner_buffer[index] = value
