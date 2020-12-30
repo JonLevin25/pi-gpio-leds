@@ -7,7 +7,7 @@ import itertools
 from typing import Union, Iterable, Sized, Iterator, List, Tuple, Protocol
 
 from Utils.color_util import RGBBytesColor
-from Utils.misc_util import slice_len
+from Utils.misc_util import slice_len, slice_idx, slice_idxs
 
 Color = Union[List[int], Tuple[int]]
 
@@ -51,6 +51,10 @@ class NewRangeSketch(object):
 #         pass
 
 class NeoPixelRange:
+    """
+    A simple yet powerful indirection for storing pixel info.
+    Can hold an array for later usage/blending, a NeoPixelRange that
+    """
     def __init__(self, inner_buffer: Union["NeoPixelRange", PixelBuf, List[RGBBytesColor]], range_slice: slice = None):
         if not inner_buffer:
             raise ValueError('No inner buffer given!')
@@ -62,18 +66,24 @@ class NeoPixelRange:
         inner_len = len(self._inner_buffer)
         return slice_len(self.range_slice, inner_len)
 
-    def __getitem__(self, index, val):
+    def __getitem__(self, index: Union[int, slice]) -> RGBBytesColor:
+        if type(index) == int:
+            return self._get_idx(index)
+        else:
+            NotImplemented
 
 
-    def __setitem__(self, index, val):
+
+    def __setitem__(self, index: Union[int, slice], val: Union[RGBBytesColor, List[RGBBytesColor]]):
         if isinstance(index, slice):
-            start, stop, step = index.indices()
-            for val_i, in_i in enumerate(range(start, stop, step)):
-                r, g, b, w = self._parse_color(val[val_i])
-                self._set_item(in_i, r, g, b, w)
+            start, stop, step = index.indices(len(self))
+            for i, idx_i in enumerate(range(start, stop, step)):
         else:
             r, g, b, w = self._parse_color(val)
             self._set_item(index, r, g, b, w)
+
+    def _get_idx(self, index: int):
+        return slice_idx(self.range_slice, len(self), index)
 
     def get_colors(self):
         return self._inner_buffer[self.range_slice]
@@ -97,23 +107,3 @@ class NeoPixelRange:
 
     def show(self):
         self._inner_buffer.show()
-
-class NeoPixelBuffer:
-    """
-    A simple yet powerful indirection for storing pixel info.
-    Can hold an array for later usage/blending, a NeoPixelRange that
-    """
-
-    # Once I can use protocols, should take anything that supports:
-    # len, getitem(int/slice) -> Color, setitem(int/slice, color)
-    def __init__(self, inner_buffer: Union["NeoPixelBuffer", NeoPixelRange, List[RGBBytesColor]]):
-        self.inner_buffer = inner_buffer
-
-    def __len__(self):
-        return len(self.inner_buffer)
-
-    def __getitem__(self, index: Union[int, slice]):
-        return self.inner_buffer[index]
-
-    def __setitem__(self, index: Union[int, slice], value: RGBBytesColor):
-        self.inner_buffer[index] = value
