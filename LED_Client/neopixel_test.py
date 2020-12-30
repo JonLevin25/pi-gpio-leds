@@ -9,6 +9,7 @@ from Utils.color_util import *
 from led_actions.Basic.LambdaAction import LambdaAction
 from led_actions.Basic.LedAction import LedAction
 from led_actions.BrightnessPingPongAction import BrightnessPingPong
+from led_actions.BulgeLedAction import Bulge
 from led_actions.ColorCycleAction import ColorCycle
 from led_actions.FillGapsAction import FillGapsAction
 from led_actions.SetRangesAction import SetRangesAction
@@ -198,10 +199,10 @@ def main(pixels: NeoPixel):
                                     on_halfcycle=None)
 
     actions = [
-        fillgapsaction
-        # Actions_Breathe.breathe_rand(pixels, rand_deep_color, 4),
+        # fillgapsaction
+        Actions_Breathe.bright_pingpong_2(pixels, 4),
         # Actions_ColorCycle.colorcylce(pixels, 5),
-        # Bulge(3, pixels, START_COL, rand_deep_color, 0.0055), # TODO: Easing
+        Bulge(3, pixels, START_COL, rand_deep_color, 0.0055), # TODO: Easing
     ]
 
     event_loop(pixels, actions)
