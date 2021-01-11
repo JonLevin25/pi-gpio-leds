@@ -4,7 +4,7 @@ from operator import __getitem__
 from adafruit_pypixelbuf import PixelBuf
 from neopixel import NeoPixel
 import itertools
-from typing import Union, Iterable, Sized, Iterator, List, Tuple, Protocol
+from typing import Union, Iterable, Sized, Iterator, List, Tuple
 
 from Utils.color_util import RGBBytesColor
 from Utils.misc_util import slice_len, slice_idx, slice_idxs

@@ -9,6 +9,7 @@ HSVColor = Union[Tuple[float, float, float], List[float]]
 ColorGetter = Callable[[], RGBBytesColor]
 
 # Colors
+COL_WHITE = (255, 255, 255)
 COL_BLACK = (0, 0, 0)
 COL_RED = (255, 0, 0)
 COL_GREEN = (0, 255, 0)
