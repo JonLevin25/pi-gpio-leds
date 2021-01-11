@@ -18,17 +18,24 @@ class ActionsRouter:
         self.actions = actions
 
     def _parse(self, message):
-        match = re.match('(.*?):(.*)$', message)
+        match = re.match('(.*?):(?:(.*),)*$', message)
         if not match:
             print('Bad scheme!')
-            return (None, None)
+            return None, None
 
-        (key, payload) = match.groups()
-        print('key: {}, payloaad: {}'.format(key, payload))
-        return key, payload
+        groups = match.groups()
+        key, params = groups[0], groups[1:]
+
+        print('key: {}, params: {}'.format(key, params))
+
+
+        return key, params
 
     def handle(self, message):
-        (key, payload) = self._parse(message)
+        (key, params) = self._parse(message)
         if key in self.actions:
             fn_handler = self.actions[key]
-            fn_handler(payload)
+            self.do_action(fn_handler, params)
+
+    def do_action(self, fn_handler, params):
+        fn_handler(*params)
