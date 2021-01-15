@@ -17,19 +17,19 @@ def _has_annotation(inspected_param: inspect.Parameter):
     return inspected_param.annotation != inspect.Parameter.empty
 
 
-def _valid_param(param: inspect.Parameter, supported_types: List[type], ignored_types: List[type]) -> bool:
+def _valid_param(param: inspect.Parameter, supported_types: List[type], omitted_params: List[str]) -> bool:
     if not _has_annotation(param):
         return False
 
     param_type = param.annotation
-    return param_type in ignored_types or param_type in supported_types
+    return param.name in omitted_params or param_type in supported_types
 
 
-def build_params_metadata(params: Mapping[str, inspect.Parameter], omitted_types: List[type]) -> ParamsMetadata:
+def build_params_metadata(params: Mapping[str, inspect.Parameter], omitted_params: List[str]) -> ParamsMetadata:
     result = OrderedDict()
     for param_name, param_val in params.items():
         param_type = param_val.annotation
-        if param_type in omitted_types:
+        if param_name in omitted_params:
             continue
         result[param_name] = param_type.__name__ if _has_annotation(param_val) else 'None'
 
@@ -40,9 +40,9 @@ def validate_params(error_mode: InvalidParamErrorMode,
                     action_name: str,
                     params: Iterator[inspect.Parameter],
                     supported_types: List[type],
-                    ignored_types: List[type]) -> bool:
+                    omitted_params: List[str]) -> bool:
     def is_invalid(param: inspect.Parameter):
-        return not _valid_param(param, supported_types, ignored_types)
+        return not _valid_param(param, supported_types, omitted_params)
 
     invalid_params = list(filter(is_invalid, params))
     if len(invalid_params) == 0:
