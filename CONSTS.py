@@ -1,5 +1,5 @@
 PORT = 8888
-ACTIONS_PATH = r"/leds"
+ACTIONS_PATH = r"/actions"
 DISCOVERY_PATH = r"/actions/discover"
 SERVER_IP = "192.168.1.106"
 
