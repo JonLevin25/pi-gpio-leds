@@ -31,7 +31,7 @@ def build_params_metadata(params: Mapping[str, inspect.Parameter], omitted_types
         param_type = param_val.annotation
         if param_type in omitted_types:
             continue
-        result[param_name] = param_type if _has_annotation(param_val) else None
+        result[param_name] = param_type.__name__ if _has_annotation(param_val) else 'None'
 
     return result
 

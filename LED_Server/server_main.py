@@ -57,8 +57,8 @@ def init() -> PixelsActionsRouter:
 if __name__ == "__main__":
     router = init()
     application = t_web.Application([
-        (ACTIONS_PATH, WebSocketHandler, dict(actions_router=router)),
         (DISCOVERY_PATH, DiscoveryService, dict(actions_router=router)),
+        (ACTIONS_PATH, WebSocketHandler, dict(actions_router=router)),
     ])
 
     application.listen(PORT)

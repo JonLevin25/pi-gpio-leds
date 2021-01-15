@@ -25,8 +25,8 @@ supported_types = [int, str]
 omitted_types = [TestClass]
 
 expected_params_0 = {
-    'x': int,
-    'a': str
+    'x': 'int',
+    'a': 'str'
 }
 
 

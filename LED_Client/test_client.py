@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import asyncio
 from asyncio import Future
+
+from tornado import gen
+from tornado.httpclient import AsyncHTTPClient, HTTPRequest
+from tornado.ioloop import PeriodicCallback
+from tornado.websocket import websocket_connect, WebSocketHandler
+
 from CONSTS import ACTIONS_REMOTE_URL, ACTIONS_DISCOVERY_URL
 
-from tornado.httpclient import AsyncHTTPClient, HTTPRequest
-from tornado.ioloop import IOLoop, PeriodicCallback
-from tornado import gen
-from tornado.websocket import websocket_connect, WebSocketHandler
-import asyncio
-import tornado.ioloop
-import typing
 
 class Client(object):
     def __init__(self, url, timeout):
