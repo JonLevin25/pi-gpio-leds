@@ -2,7 +2,7 @@ from typing import List
 
 from neopixel import NeoPixel
 
-from Utils.reflection_builder import InvalidParamErrorMode, build_actions_metadata
+from Utils.reflection_builder import InvalidParamErrorMode
 from Utils.ActionsRouter import ActionsRouter
 
 

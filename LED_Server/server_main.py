@@ -3,21 +3,14 @@ import tornado.websocket as t_websocket
 from tornado.ioloop import IOLoop
 
 import event_loop
+from LED_Server.discovery.discovery_service import DiscoveryService
 from Utils.ActionsRouter import ActionsRouter
 from Utils.PixelsActionsRouter import PixelsActionsRouter
-from CONSTS import ROUTE_PATH, PORT
+from CONSTS import *
 from Utils.color_util import COL_RED
 
 
-# TODO: "Discover" get route that returns the signatures (key + param types (names?) of everything in actions_router
-class DiscoverHTTPServer(t_web.RequestHandler):
-    # noinspection PyAttributeOutsideInit
-    def initialize(self, actions_router: ActionsRouter) -> None:
-        self.actions_router = actions_router
-
-    # def get()
-
-
+# noinspection PyAbstractClass
 class WebSocketHandler(t_websocket.WebSocketHandler):
     # noinspection PyAttributeOutsideInit
     def initialize(self, actions_router: ActionsRouter) -> None:
@@ -64,7 +57,8 @@ def init() -> PixelsActionsRouter:
 if __name__ == "__main__":
     router = init()
     application = t_web.Application([
-        (ROUTE_PATH, WebSocketHandler, dict(actions_router=router)),
+        (ACTIONS_PATH, WebSocketHandler, dict(actions_router=router)),
+        (DISCOVERY_PATH, DiscoveryService, dict(actions_router=router)),
     ])
 
     application.listen(PORT)
