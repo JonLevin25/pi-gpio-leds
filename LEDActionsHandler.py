@@ -173,16 +173,14 @@ def parse_num(string: str):
     except:
         return int(string)
 
-def set_brighness(pixels: NeoPixel, val: str):
-    num = parse_num(val)
-    pixels.brightness = num
+def set_brightness(pixels: NeoPixel, value: float):
+    pixels.brightness = value
 
-def test_fill_rand(pixels: NeoPixel, max_colors_str: str):
-    max_colors = parse_int(max_colors_str)
+def test_fill_rand(pixels: NeoPixel, max_colors: float):
     Actions_Basic.set_random(pixels, rand_func_max_colors(max_colors, rand_deep_color))
 
 
 actions_router_ctor = lambda pixels: PixelsActionsRouter(pixels, actions={
-    'brightness': set_brighness,
+    'brightnessx': set_brightness,
     'random': test_fill_rand
 })

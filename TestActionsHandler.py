@@ -23,6 +23,7 @@ def cycle(msg):
         TEST.cycle(1, int(msg))
     else:
         print("msg ({}) was not an int!".format(msg))
+
 actions_router = ActionsRouter(actions={
     'morse': TEST.morse,
     'prnt': p,

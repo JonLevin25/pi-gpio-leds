@@ -3,6 +3,7 @@ import tornado.websocket as t_websocket
 from tornado.ioloop import IOLoop
 
 import event_loop
+from LED_Server.actions.actions_service import ActionsService
 from LED_Server.discovery.discovery_service import DiscoveryService
 from Utils.ActionsRouter import ActionsRouter
 from Utils.PixelsActionsRouter import PixelsActionsRouter
@@ -10,36 +11,9 @@ from CONSTS import *
 from Utils.color_util import COL_RED
 
 
+
 # noinspection PyAbstractClass
-class WebSocketHandler(t_websocket.WebSocketHandler):
-    # noinspection PyAttributeOutsideInit
-    def initialize(self, actions_router: ActionsRouter) -> None:
-        self.actions_router = actions_router
 
-    def open(self):
-        print("New client connected")
-        self.write_message("You are connected")
-
-    def on_message(self, message):
-        if type(message) == bytes:
-            self.write_and_err("Expected string message, but received bytes!")
-            return
-        self.write_and_log(message)
-        self.actions_router.handle(message)
-
-    def on_close(self):
-        print("Client disconnected")
-
-    def check_origin(self, origin):
-        return True
-
-    def write_and_log(self, msg):
-        self.write_message("You said: " + msg)
-        print("RESPONSE: " + msg)
-
-    def write_and_err(self, err):
-        self.write_error(err)
-        print("ERROR: " + err)
 
 
 def init() -> PixelsActionsRouter:
@@ -58,7 +32,8 @@ if __name__ == "__main__":
     router = init()
     application = t_web.Application([
         (DISCOVERY_PATH, DiscoveryService, dict(actions_router=router)),
-        (ACTIONS_PATH, WebSocketHandler, dict(actions_router=router)),
+        (ACTIONS_PATH, ActionsService, dict(actions_router=router)),
+        # (ACTIONS_PATH, WebSocketHandler, dict(actions_router=router)),
     ])
 
     application.listen(PORT)
