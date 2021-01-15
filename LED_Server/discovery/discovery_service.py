@@ -15,6 +15,6 @@ class DiscoveryService(tornado.web.RequestHandler):
 
     def get(self):
         print("Handling Discovery request")
-        metadata = self.actions_router.get_metadata(supported_types=[int, float, str])
+        metadata = self.actions_router.get_metadata()
         json_meta = json.dumps(metadata)
         self.write(json_meta)

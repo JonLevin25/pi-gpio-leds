@@ -1,3 +1,4 @@
+import json
 import logging
 import unittest
 from Utils.ActionsRouter import ActionsRouter, ActionRequest, ActionRequestParam
@@ -20,6 +21,9 @@ def testAction1(test: TestClass, x: int, a: str, c):
 def testAction2(test: TestClass, x: int, y: set):
     pass
 
+def testAction3(x: int):
+    logging.info('OK')
+
 
 supported_types = [int, str]
 closure_params = {'test': TestClass('else')}
@@ -29,15 +33,24 @@ expected_params_0 = {
     'a': 'str'
 }
 
-class JsonToFnCallTests(unittest.TestCase):
-    def test_method_call(self):
+class FnCallTests(unittest.TestCase):
+    def test_json_deserialize_fn_call_and_closure(self):
         router0 = ActionsRouter({'test0': testAction0}, supported_types, closure_params)
-        action_request = ActionRequest('test0', [ActionRequestParam('x', '3'), ActionRequestParam('a', 'test')])
+        action_json = '{"name":"test0", "params":[{"name": "x", "value": "3"}, {"name": "a", "value": "test"}]}'
+        action_request = ActionRequest.fromDecodedJson(json.loads(action_json))
 
         with self.assertLogs(level='INFO') as log:
             router0.handle(action_request)
             self.assertEqual(1, len(log.output))
             self.assertEqual(f'a: test; x: 4; test: else', log.records[0].msg)
+
+    def test_closure_doesnt_break_functions_without_it(self):
+        router3 = ActionsRouter({'test3': testAction3}, supported_types, closure_params)
+        action_request = ActionRequest('test3', [ActionRequestParam('x', 1)])
+
+        with self.assertLogs(level='INFO') as log:
+            router3.handle(action_request)
+            self.assertEqual(f'OK', log.records[0].msg)
 
 
 class ReflectionBuilderTests(unittest.TestCase):

@@ -16,12 +16,14 @@ class ActionsService(tornado.web.RequestHandler):
 
     def post(self):
         self.set_header(HTTP_Headers.Key_ContentType, HTTP_Headers.Val_AppJson)
-        content_type = self.request.headers[HTTP_Headers.Key_ContentType]
-        if content_type != HTTP_Headers.Val_AppJson:
-            self.write_and_err(400, f'{HTTP_Headers.Key_ContentType} must be set to "{HTTP_Headers.Val_AppJson}"!')
-            return
 
-        jsonBody = self.request.body
+        # content_type = self.request.headers[HTTP_Headers.Key_ContentType]
+        # if content_type != HTTP_Headers.Val_AppJson:
+        #     self.write_and_err(400, f'{HTTP_Headers.Key_ContentType} must be set to "{HTTP_Headers.Val_AppJson}"!')
+        #     return
+
+        jsonBody = self.request.body.decode()
+        print(f'actions request with body: {jsonBody}')
         try:
             deserialized_json = json.loads(jsonBody)
             action_request = ActionRequest.fromDecodedJson(deserialized_json)

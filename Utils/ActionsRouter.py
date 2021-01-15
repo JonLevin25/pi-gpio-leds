@@ -79,7 +79,9 @@ class ActionsRouter:
     def _apply(self, fn: Callable[[any], None], params: List['ActionRequestParam']):
         inspected_params = inspect.signature(fn).parameters
         parsed_params = self._parse_param_dict(fn, inspected_params, params)
-        fn(**self.closure_params, **parsed_params)
+
+        closure_params = {k:v for k,v in self.closure_params.items() if k in inspected_params.keys()}
+        fn(**closure_params, **parsed_params)
 
     def _parse_param_dict(self, fn, inspected_params, params) -> Mapping[str, any]:
         parsed_args = {}
@@ -104,7 +106,8 @@ class ActionRequestParam:
         self.name = name
         self.value = value
 
-    def fromDecodedJson(self, obj) -> 'ActionRequestParam':
+    @classmethod
+    def fromDecodedJson(cls, obj) -> 'ActionRequestParam':
         return ActionRequestParam(obj['name'], obj['value'])
 
 
@@ -116,11 +119,11 @@ class ActionRequest:
     @classmethod
     def fromDecodedJson(cls, obj) -> 'ActionRequest':
         name = obj['name']
-        params = obj['params']
+        params_obj = obj['params']
 
-        if not name or not params:
+        if not name or not params_obj:
             logging.error('missing root objects on action request')
             return None
 
-        params = list(map(ActionRequest.fromDecodedJson, params))
+        params = list(map(ActionRequestParam.fromDecodedJson, params_obj))
         return ActionRequest(name, params)

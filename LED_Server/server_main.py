@@ -18,7 +18,7 @@ def init() -> ActionsRouter:
 
     router = PixelsActionsRouter(pixels, {
         'brightness': set_brightness,
-        'rand_color': rand_color
+        'rand_color': test_fill_rand,
     })
 
     return router
