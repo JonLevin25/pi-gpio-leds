@@ -26,22 +26,22 @@ def main(pixels: NeoPixel):
     print('creating actions to run')
 
     # Actions_Basic.set_random(pixels, rand_func_max_colors(3, rand_deep_color))
-    # Actions_Basic.set_sequential(pixels)
+    Actions_Basic.set_sequential(pixels)
 
     set_colors_action = lambda: Actions_Basic.set_sequential(pixels, 0, 0.1)
-    fillgapsaction = FillGapsAction(pixels, set_colors_action,
-                                    fill_length=3,
-                                    gap_length=1,
-                                    half_cycle_time=0.2,
-                                    min_brightness=0.2,
-                                    max_brightness=1.0,
-                                    on_halfcycle=None)
+    # fillgapsaction = FillGapsAction(pixels, set_colors_action,
+    #                                 fill_length=3,
+    #                                 gap_length=1,
+    #                                 half_cycle_time=0.2,
+    #                                 min_brightness=0.2,
+    #                                 max_brightness=1.0,
+    #                                 on_halfcycle=None)
 
     actions = [
         # fillgapsaction
-        Actions_Breathe.bright_pingpong_2(pixels, 1.5),
-        # Actions_ColorCycle.colorcylce(pixels, 10),
-        Bulge(3, pixels, START_COL, rand_deep_color, 0.0055), # TODO: Easing
+        # Actions_Breathe.bright_pingpong_2(pixels, 1.5),
+        Actions_ColorCycle.colorcylce(pixels,6),
+        # Bulge(3, pixels, START_COL, rand_deep_color, 0.0055), # TODO: Easing
     ]
 
     event_loop.run_loop(pixels, actions)

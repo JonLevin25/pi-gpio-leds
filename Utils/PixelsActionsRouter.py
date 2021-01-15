@@ -11,3 +11,4 @@ class PixelsActionsRouter(ActionsRouter):
 
     def do_action(self, fn_handler, params):
         fn_handler(self.pixels, *params)
+        self.pixels.show()
