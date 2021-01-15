@@ -19,7 +19,7 @@ ActionsMetadata = Mapping[str, ParamsMetadata]
 
 # ignored == types that will
 def build_actions_metadata(router: ActionsRouter, on_invalid_action: ErrorMode, supported_types: List[type],
-                           omitted_types: List[type] = None) -> ActionsMetadata:  # todo: annotate return type
+                           omitted_types: List[type] = None) -> ActionsMetadata:
 
     assert router and router.actions
     assert supported_types is not None
@@ -47,7 +47,7 @@ def _build_params_metadata(params: Mapping[str, inspect.Parameter], omitted_type
         param_type = param_val.annotation
         if param_type in omitted_types:
             continue
-        result[param_name] = param_type
+        result[param_name] = param_type if _has_annotation(param_val) else None
 
     return result
 
@@ -79,7 +79,7 @@ def _validate_params(error_mode: ErrorMode,
 
     msg = f'Action signature has invalid params! action: {action_name}. params: {", ".join(map(lambda param: param.name, invalid_params))}'
     if error_mode == ErrorMode.THROW:
-        raise Exception(msg)
+        raise ValueError(msg)
 
     if error_mode == ErrorMode.LOG_AND_INCLUDE:
         log.error(msg)
