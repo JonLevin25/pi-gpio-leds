@@ -5,11 +5,12 @@ from Utils.reflection_builder import InvalidParamErrorMode
 
 
 class TestClass:
-    pass
+    def __init__(self, something):
+            self.something = something
 
 
 def testAction0(test: TestClass, x: int, a: str):
-    logging.log(f'a: {a}; x: {x + 1}')
+    logging.info(f'a: {a}; x: {x + 1}; test: {test.something}')
 
 
 def testAction1(test: TestClass, x: int, a: str, c):
@@ -21,7 +22,7 @@ def testAction2(test: TestClass, x: int, y: set):
 
 
 supported_types = [int, str]
-omitted_types = [TestClass]
+closure_params = {'test': TestClass('else')}
 
 expected_params_0 = {
     'x': 'int',
@@ -30,31 +31,31 @@ expected_params_0 = {
 
 class JsonToFnCallTests(unittest.TestCase):
     def test_method_call(self):
-        router0 = ActionsRouter({'test0': testAction0}, supported_types, omitted_types)
+        router0 = ActionsRouter({'test0': testAction0}, supported_types, closure_params)
         action_request = ActionRequest('test0', [ActionRequestParam('x', '3'), ActionRequestParam('a', 'test')])
 
         with self.assertLogs(level='INFO') as log:
             router0.handle(action_request)
             self.assertEqual(1, len(log.output))
-            self.assertEqual(f'a: test; x: 4', log.output[0])
+            self.assertEqual(f'a: test; x: 4; test: else', log.records[0].msg)
 
 
 class ReflectionBuilderTests(unittest.TestCase):
     def test_simple(self):
-        router0 = ActionsRouter({'test0': testAction0}, supported_types, omitted_types)
+        router0 = ActionsRouter({'test0': testAction0}, supported_types, closure_params)
         result = router0.get_metadata(InvalidParamErrorMode.THROW)
         self.assertEqual({'test0': expected_params_0}, result)
 
     def test_throws(self):
-        router1 = ActionsRouter({'test1': testAction1}, supported_types, omitted_types)
-        router2 = ActionsRouter({'test2': testAction2}, supported_types, omitted_types)
+        router1 = ActionsRouter({'test1': testAction1}, supported_types, closure_params)
+        router2 = ActionsRouter({'test2': testAction2}, supported_types, closure_params)
         self.assertRaises(ValueError,
                           lambda: router1.get_metadata(InvalidParamErrorMode.THROW))
         self.assertRaises(ValueError,
                           lambda: router2.get_metadata(InvalidParamErrorMode.THROW))
 
     def test_unannotated(self):
-        router1 = ActionsRouter({'test0': testAction0, 'test1': testAction1}, supported_types, omitted_types)
+        router1 = ActionsRouter({'test0': testAction0, 'test1': testAction1}, supported_types, closure_params)
         # OMIT ACTION
         with self.assertLogs(logging.getLogger(), level='ERROR'):
             result = router1.get_metadata(InvalidParamErrorMode.OMIT_ACTION)
@@ -63,7 +64,7 @@ class ReflectionBuilderTests(unittest.TestCase):
             }, result)
 
     def test_unsupported_param(self):
-        router2 = ActionsRouter({'test0': testAction0, 'test2': testAction2}, supported_types, omitted_types)
+        router2 = ActionsRouter({'test0': testAction0, 'test2': testAction2}, supported_types, closure_params)
         # OMIT
         with self.assertLogs(logging.getLogger(), level='ERROR'):
             result = router2.get_metadata(InvalidParamErrorMode.OMIT_ACTION)
