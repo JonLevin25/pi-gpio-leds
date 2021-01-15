@@ -161,16 +161,28 @@ def is_int(string):
         return False
     return True
 
+def parse_int(string: str):
+    try:
+        return int(string)
+    except:
+        print(f'Could not parse "{string}" to int!')
+
 def parse_num(string: str):
     try:
         return float(string)
     except:
         return int(string)
 
-def set_brighness(pixels, val: str):
+def set_brighness(pixels: NeoPixel, val: str):
     num = parse_num(val)
     pixels.brightness = num
 
-actions_router = PixelsActionsRouter(actions={
-    'brightness': set_brighness
+def test_fill_rand(pixels: NeoPixel, max_colors_str: str):
+    max_colors = parse_int(max_colors_str)
+    Actions_Basic.set_random(pixels, rand_func_max_colors(max_colors, rand_deep_color))
+
+
+actions_router_ctor = lambda pixels: PixelsActionsRouter(pixels, actions={
+    'brightness': set_brighness,
+    'random': test_fill_rand
 })
