@@ -2,7 +2,7 @@ from enum import Enum
 from typing import Callable
 
 from Utils.misc_util import FnVoid
-from led_actions.Basic.LedAction import LedAction
+from led_actions.base.LedAction import LedAction
 
 class LambdaActionRunMode(Enum):
     StartAndUpdate = 0,

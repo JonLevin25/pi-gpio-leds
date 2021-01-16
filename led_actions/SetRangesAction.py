@@ -4,8 +4,8 @@ import neopixel
 
 from Utils.color_util import RGBBytesColor
 from Utils.misc_util import is_iter
-from led_actions.Basic.LedAction import LedAction
-from led_actions.Basic.NeoPixelWrappers import NeoPixelRange
+from led_actions.base.LedAction import LedAction
+from led_actions.experimental.NeoPixelWrappers import NeoPixelRange
 
 
 class SetRangesAction(LedAction):

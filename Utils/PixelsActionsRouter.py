@@ -6,7 +6,7 @@ from neopixel import NeoPixel
 from Utils.reflection_builder import InvalidParamErrorMode
 from Utils.ActionsRouter import ActionsRouter, ActionRequestParam
 from Utils.time_util import Time
-from led_actions.Basic.LedAction import LedAction
+from led_actions.base.LedAction import LedAction
 
 
 class PixelsActionsRouter(ActionsRouter):

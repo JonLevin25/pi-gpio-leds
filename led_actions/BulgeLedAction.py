@@ -3,8 +3,8 @@ import pytweening
 
 from Utils.color_util import *
 from Utils.math_util import *
-from led_actions.Basic.LedAction import LedAction
-from led_actions.Basic.NeoPixelWrappers import NeoPixelRange
+from led_actions.base.LedAction import LedAction
+from led_actions.experimental.NeoPixelWrappers import NeoPixelRange
 from random import Random
 
 random = Random()

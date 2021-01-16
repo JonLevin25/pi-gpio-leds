@@ -78,6 +78,7 @@ class NeoPixelRange:
         if isinstance(index, slice):
             start, stop, step = index.indices(len(self))
             for i, idx_i in enumerate(range(start, stop, step)):
+                pass # TODO
         else:
             r, g, b, w = self._parse_color(val)
             self._set_item(index, r, g, b, w)

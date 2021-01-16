@@ -1,5 +1,5 @@
 import unittest
-from led_actions.Basic.NeoPixelTween import *
+from led_actions.experimental.NeoPixelTween import *
 
 
 class TestGenericTween(unittest.TestCase):

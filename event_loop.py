@@ -1,14 +1,11 @@
 import asyncio
-import time
-from typing import List
 
 import board
 from neopixel import NeoPixel
 
 from Utils.color_util import *
 from Utils.time_util import Time
-from led_actions.Basic.LedAction import LedAction
-from led_actions.Basic.NeoPixelWrappers import NeoPixelRange
+from led_actions.base.LedAction import LedAction
 
 
 def init_pixels(led_count: int) -> NeoPixel:

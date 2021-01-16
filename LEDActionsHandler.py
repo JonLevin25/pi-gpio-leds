@@ -5,10 +5,8 @@ from typing import *
 import pytweening
 from neopixel import NeoPixel
 
-from Utils.ActionsRouter import ActionsRouter
-from Utils.PixelsActionsRouter import PixelsActionsRouter
 from Utils.color_util import *
-from led_actions.Basic.NeoPixelWrappers import NeoPixelRange
+from led_actions.experimental.NeoPixelWrappers import NeoPixelRange
 from led_actions.BrightnessPingPongAction import BrightnessPingPong
 from led_actions.ColorCycleAction import ColorCycle
 

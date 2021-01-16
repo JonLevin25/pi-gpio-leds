@@ -1,4 +1,4 @@
-from led_actions.Basic.LedAction import LedAction
+from led_actions.base.LedAction import LedAction
 
 
 class LedActionPingPong(LedAction):

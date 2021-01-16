@@ -1,7 +1,4 @@
 import event_loop
-from led_actions.Basic.NeoPixelWrappers import NeoPixelRange
-from led_actions.BulgeLedAction import Bulge
-from led_actions.FillGapsAction import FillGapsAction
 from LEDActionsHandler import *
 
 def main(pixels: NeoPixel):
