@@ -81,7 +81,7 @@ class ActionsRouter:
         parsed_params = self._parse_param_dict(fn, inspected_params, params)
 
         closure_params = {k:v for k,v in self.closure_params.items() if k in inspected_params.keys()}
-        fn(**closure_params, **parsed_params)
+        return fn(**closure_params, **parsed_params)
 
     def _parse_param_dict(self, fn, inspected_params, params) -> Mapping[str, any]:
         parsed_args = {}

@@ -1,3 +1,4 @@
+import asyncio
 import time
 from typing import List
 
@@ -19,7 +20,7 @@ def init_pixels(led_count: int) -> NeoPixel:
 
     return pixels
 
-def run_loop(pixels, actions: List[LedAction]):
+async def run_loop(pixels, actions: List[LedAction]):
     print('{} actions set. Initializing'.format(len(actions)))
 
     curr_time = time.time()
@@ -39,4 +40,4 @@ def run_loop(pixels, actions: List[LedAction]):
         for a in actions:
             a.tick(curr_time)
         pixels.show()
-        time.sleep(0.001)  # without this dt is sometimes too small
+        await asyncio.sleep(0.001)  # without this dt is sometimes too small

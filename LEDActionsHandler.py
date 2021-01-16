@@ -127,7 +127,7 @@ class Actions_Breathe:
         # action_bright_pingpong(4, on_brightness_halfcycle)
 
     @classmethod
-    def bright_pingpong_2(cls, pixels, half_cycle_time, callback=None):
+    def bright_pingpong_2(cls, pixels: NeoPixel, half_cycle_time, callback=None):
         # dont set min brightness to 0 since that messes up hue calculation for other funcs
         return BrightnessPingPong(pixels, half_cycle_time=half_cycle_time, min_brightness=0.3, max_brightness=0.8,
                                   ease_func=pytweening.easeInOutCubic, on_halfcycle_finished=callback)
@@ -135,8 +135,8 @@ class Actions_Breathe:
 
 class Actions_ColorCycle:
     @classmethod
-    def colorcylce(cls, pixels, iter_time: float):
-        return ColorCycle(pixels, iter_time, ascending=False)
+    def colorcylce(cls, pixels: NeoPixel, cycle_time: float):
+        return ColorCycle(pixels, cycle_time, ascending=False)
 
     @classmethod
     # fills the strip one by one. Could be nice if async so I can send waves on top of each other

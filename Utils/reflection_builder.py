@@ -18,11 +18,13 @@ def _has_annotation(inspected_param: inspect.Parameter):
 
 
 def _valid_param(param: inspect.Parameter, supported_types: List[type], omitted_params: List[str]) -> bool:
+    if param.name in omitted_params:
+        return True
     if not _has_annotation(param):
         return False
 
     param_type = param.annotation
-    return param.name in omitted_params or param_type in supported_types
+    return  param_type in supported_types
 
 
 def build_params_metadata(params: Mapping[str, inspect.Parameter], omitted_params: List[str]) -> ParamsMetadata:

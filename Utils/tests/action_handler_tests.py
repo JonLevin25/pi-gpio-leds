@@ -10,7 +10,8 @@ class TestClass:
             self.something = something
 
 
-def testAction0(test: TestClass, x: int, a: str):
+# test is missing type on purpose - shouldnt care
+def testAction0(test, x: int, a: str):
     logging.info(f'a: {a}; x: {x + 1}; test: {test.something}')
 
 

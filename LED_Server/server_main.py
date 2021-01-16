@@ -10,7 +10,7 @@ from Utils.color_util import COL_RED
 from LEDActionsHandler import *
 
 
-def init() -> ActionsRouter:
+def init() -> PixelsActionsRouter:
     pixels = event_loop.init_pixels(30)
     pixels.fill(COL_RED)
     pixels.brightness = 0.3
@@ -19,10 +19,11 @@ def init() -> ActionsRouter:
     router = PixelsActionsRouter(pixels, {
         'brightness': set_brightness,
         'rand_color': test_fill_rand,
+        'set_sequential': Actions_Basic.set_sequential,
+        'color_cycle': Actions_ColorCycle.colorcylce,
     })
 
     return router
-
 
 if __name__ == "__main__":
     router = init()
@@ -34,4 +35,7 @@ if __name__ == "__main__":
 
     application.listen(PORT)
     print(f'listening on port {PORT}')
-    IOLoop.current().start()
+    ioloop = IOLoop.current()
+    ioloop.run_sync(lambda: event_loop.run_loop(router.pixels, router.running_actions))
+    ioloop.start()
+
