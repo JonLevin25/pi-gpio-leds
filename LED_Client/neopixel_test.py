@@ -1,5 +1,5 @@
 import event_loop
-from LEDActionsHandler import *
+from led_actions.action_starters import *
 
 def main(pixels: NeoPixel):
     golden_yellow = html_to_rgb_bytes("#ff9900")

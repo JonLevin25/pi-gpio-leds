@@ -3,7 +3,7 @@ from typing import Callable
 import pytweening
 
 from Utils.math_util import *
-from led_actions.LedActionPingPong import LedActionPingPong
+from led_actions.actions.LedActionPingPong import LedActionPingPong
 
 
 # work with deltas so it reacts to outside changes

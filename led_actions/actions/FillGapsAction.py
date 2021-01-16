@@ -8,8 +8,8 @@ from led_actions.base.ActionQueue import ActionQueue
 from led_actions.base.LambdaAction import LambdaAction
 from led_actions.base.LedAction import LedAction
 from led_actions.experimental.NeoPixelWrappers import NeoPixelRange
-from led_actions.BrightnessPingPongAction import BrightnessPingPong
-from led_actions.SetRangesAction import SetRangesAction
+from led_actions.actions.BrightnessPingPongAction import BrightnessPingPong
+from led_actions.actions.SetRangesAction import SetRangesAction
 
 
 def FillGapsAction(pixels: neopixel.NeoPixel, color_setter: FnVoid,

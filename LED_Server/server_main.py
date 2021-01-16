@@ -5,9 +5,8 @@ import event_loop
 from LED_Server.actions.actions_service import ActionsService
 from LED_Server.discovery.discovery_service import DiscoveryService
 from CONSTS import *
-from Utils.color_util import COL_RED
 
-from LEDActionsHandler import *
+from led_actions.action_starters import *
 
 
 def init() -> PixelsActionsRouter:
@@ -36,6 +35,7 @@ if __name__ == "__main__":
     application.listen(PORT)
     print(f'listening on port {PORT}')
     ioloop = IOLoop.current()
+    router.running_actions.append(Actions_ColorCycle.colorcylce(router.pixels, 10.0))
     ioloop.run_sync(lambda: event_loop.run_loop(router.pixels, router.running_actions))
     ioloop.start()
 

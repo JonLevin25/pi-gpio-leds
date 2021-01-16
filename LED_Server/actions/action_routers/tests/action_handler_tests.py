@@ -1,8 +1,9 @@
 import json
 import logging
 import unittest
-from Utils.ActionsRouter import ActionsRouter, ActionRequest, ActionRequestParam
-from Utils.reflection_builder import InvalidParamErrorMode
+from LED_Server.actions.action_routers.ActionsRouter import ActionsRouter
+from LED_Server.models.action_models import ActionRequestParam, ActionRequest
+from LED_Server.actions.action_routers.reflection_builder import InvalidParamErrorMode
 
 
 class TestClass:
