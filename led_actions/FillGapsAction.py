@@ -49,7 +49,7 @@ def FillGapsAction(pixels: neopixel.NeoPixel, color_setter: FnVoid,
                                         min_brightness, max_brightness,
                                         on_halfcycle_finished=on_brightness_halfcycle)
 
-    set_colors = LambdaAction.start_and_update(color_setter)
+    set_colors = LambdaAction.create(color_setter)
     turn_off_gaps = SetRangesAction(gaps_ranges, COL_BLACK)
     turn_off_between_gaps = SetRangesAction(fills_ranges, COL_BLACK)
 

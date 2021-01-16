@@ -6,6 +6,7 @@ import board
 from neopixel import NeoPixel
 
 from Utils.color_util import *
+from Utils.time_util import Time
 from led_actions.Basic.LedAction import LedAction
 from led_actions.Basic.NeoPixelWrappers import NeoPixelRange
 
@@ -23,7 +24,7 @@ def init_pixels(led_count: int) -> NeoPixel:
 async def run_loop(pixels, actions: List[LedAction]):
     print('{} actions set. Initializing'.format(len(actions)))
 
-    curr_time = time.time()
+    curr_time = Time.now()
 
     # while True:
     #     col = rand_deep_color(lum=1.0)
@@ -36,8 +37,8 @@ async def run_loop(pixels, actions: List[LedAction]):
 
     print('actions initiazlied')
     while True:
-        curr_time = time.time()
+        curr_time = Time.now()
         for a in actions:
             a.tick(curr_time)
         pixels.show()
-        await asyncio.sleep(0.001)  # without this dt is sometimes too small
+        await asyncio.sleep(0.00833)  # 120Hz - without this dt is sometimes too small
