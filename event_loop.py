@@ -2,7 +2,9 @@ import asyncio
 
 import board
 from neopixel import NeoPixel
+from tornado.ioloop import IOLoop
 
+from LED_Server.actions.action_routers.PixelsActionsRouter import PixelsActionsRouter
 from Utils.color_util import *
 from Utils.time_util import Time
 from led_actions.base.LedAction import LedAction
@@ -19,11 +21,16 @@ def init_pixels(led_count: int) -> NeoPixel:
     return pixels
 
 
-async def event_loop(pixels, actions: List[LedAction]):
-    print('{} actions set. Initializing'.format(len(actions)))
+def start_pixels_event_loop(router: PixelsActionsRouter):
+    ioloop = IOLoop.current()
+    ioloop.run_sync(lambda: _event_loop(router))
+
+
+async def _event_loop(pixels, router: PixelsActionsRouter):
+    print('{} actions set. Initializing'.format(len(router.running_actions)))
 
     curr_time = Time.now()
-    for a in actions:
+    for a in router.running_actions:
         a.run(curr_time)
 
     pixels.show()
@@ -31,7 +38,7 @@ async def event_loop(pixels, actions: List[LedAction]):
     print('actions initiazlied')
     while True:
         curr_time = Time.now()
-        for a in actions:
+        for a in router.running_actions:
             a.tick(curr_time)
         pixels.show()
         await asyncio.sleep(0.00833)  # 120Hz - without this dt is sometimes too small

@@ -58,8 +58,7 @@ def init_app() -> Tuple[NeoPixel, PixelsActionsRouter]:
     atexit.register(lambda: on_app_exit(pixels))
 
     print(f'listening on port {PORT}')
-    ioloop = IOLoop.current()
-    ioloop.run_sync(lambda: event_loop.event_loop(router.pixels, router.running_actions))
+    event_loop.start_pixels_event_loop(router)
 
     return pixels, router
 
