@@ -18,15 +18,11 @@ def init_pixels(led_count: int) -> NeoPixel:
 
     return pixels
 
+
 async def loop(pixels, actions: List[LedAction]):
     print('{} actions set. Initializing'.format(len(actions)))
 
     curr_time = Time.now()
-
-    # while True:
-    #     col = rand_deep_color(lum=1.0)
-    #     color_chase(pixels, col, pix_wait=0.001, cycle_wait=0.5)
-
     for a in actions:
         a.run(curr_time)
 

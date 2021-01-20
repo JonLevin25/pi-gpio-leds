@@ -37,7 +37,7 @@ class ActionsRouter:
         action = self.actions[action_request.name]
 
         assert action
-        self._apply(action, action_request.params)
+        self.call_function(action, action_request.params)
 
     def get_metadata(self,
                      on_invalid_params: InvalidParamErrorMode = InvalidParamErrorMode.OMIT_ACTION) -> ActionsMetadata:
@@ -56,7 +56,7 @@ class ActionsRouter:
 
         return result
 
-    def _apply(self, fn: Callable[[any], None], params: List['ActionRequestParam']):
+    def call_function(self, fn: Callable[[any], None], params: List['ActionRequestParam']):
         inspected_params = inspect.signature(fn).parameters
         parsed_params = self._parse_param_dict(fn, inspected_params, params)
 

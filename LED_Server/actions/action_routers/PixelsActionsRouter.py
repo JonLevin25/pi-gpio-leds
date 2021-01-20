@@ -1,4 +1,5 @@
-from typing import List, Mapping, Callable
+import logging
+from typing import List, Mapping, Callable, Iterable
 
 from neopixel import NeoPixel
 
@@ -11,21 +12,30 @@ from led_actions.base.LedAction import LedAction
 class PixelsActionsRouter(ActionsRouter):
     '''A simple ActionsRouter that injects "pixels" to args'''
 
-    def __init__(self, pixels: NeoPixel, actions: Mapping[str, Callable]):
+    def __init__(self, pixels: NeoPixel, action_map: Mapping[str, Callable]):
         self.pixels = pixels
         self.running_actions = []
-        super().__init__(actions, supported_types=[int, float, str], closure_params = {'pixels': pixels})
+        super().__init__(action_map, supported_types=[int, float, str], closure_params={'pixels': pixels})
 
-    def _apply(self, fn: Callable[[any], None], params: List['ActionRequestParam']):
-        fn_return = super(PixelsActionsRouter, self)._apply(fn, params)
+    def call_function(self, fn: Callable[[any], None], params: List['ActionRequestParam']):
+        fn_result = super(PixelsActionsRouter, self).call_function(fn, params)
 
         # if its a LedAction - run it exclusively for now
-        if isinstance(fn_return, LedAction):
-            self.stop_running_actions()
-            fn_return.run(Time.now())
-            self.running_actions.append(fn_return)
-
+        if isinstance(fn_result, LedAction):
+            self.clear_running_actions()
+            self.add_action(fn_result)
         self.pixels.show()
 
-    def stop_running_actions(self):
-        self.running_actions.clear() # dont replace list (actions = []) - since ref is used by event loop
+    def add_actions(self, actions: Iterable[LedAction]):
+        for action in actions:
+            self.add_action(action)
+
+    def add_action(self, action: LedAction):
+        if action is None:
+            logging.error('action was None!')
+            return
+        action.run(Time.now())
+        self.running_actions.append(action)
+
+    def clear_running_actions(self):
+        self.running_actions.clear()  # dont replace list (actions = []) - since ref is used by event loop
