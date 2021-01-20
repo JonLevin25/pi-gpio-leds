@@ -9,9 +9,10 @@ from CONSTS import *
 
 from led_actions.action_starters import *
 from led_actions.actions.BulgeLedAction import Bulge
+import atexit
 
 
-def init() -> PixelsActionsRouter:
+def init() -> Tuple[NeoPixel, PixelsActionsRouter]:
     print('initializing pixels')
     pixels = event_loop.init_pixels(30)
     router = PixelsActionsRouter(pixels, {
@@ -22,12 +23,13 @@ def init() -> PixelsActionsRouter:
     })
 
     run_test_code(pixels, router)
+    atexit.register(lambda: on_app_exit(pixels))
 
-    return router
+    return pixels, router
 
 
 def make_app():
-    router = init()
+    pixels, router = init()
     application = tornado.web.Application([
         (DISCOVERY_PATH, DiscoveryService, dict(actions_router=router)),
         (ACTIONS_PATH, ActionsService, dict(actions_router=router)),
@@ -37,8 +39,14 @@ def make_app():
     application.listen(PORT)
     print(f'listening on port {PORT}')
     ioloop = IOLoop.current()
-    ioloop.run_sync(lambda: event_loop.loop(router.pixels, router.running_actions))
-    ioloop.start()
+    ioloop.run_sync(lambda: event_loop.event_loop(router.pixels, router.running_actions))
+    # ioloop.start()
+
+
+def on_app_exit(pixels):
+    pixels.fill(COL_BLACK)
+    pixels.show()
+    print('Exiting...')
 
 
 def run_test_code(pixels: NeoPixel, router: PixelsActionsRouter):

@@ -19,7 +19,7 @@ def init_pixels(led_count: int) -> NeoPixel:
     return pixels
 
 
-async def loop(pixels, actions: List[LedAction]):
+async def event_loop(pixels, actions: List[LedAction]):
     print('{} actions set. Initializing'.format(len(actions)))
 
     curr_time = Time.now()
@@ -29,14 +29,9 @@ async def loop(pixels, actions: List[LedAction]):
     pixels.show()
 
     print('actions initiazlied')
-    try:
-        while True:
-            curr_time = Time.now()
-            for a in actions:
-                a.tick(curr_time)
-            pixels.show()
-            await asyncio.sleep(0.00833)  # 120Hz - without this dt is sometimes too small
-    finally:
-        pixels.fill(COL_BLACK)
+    while True:
+        curr_time = Time.now()
+        for a in actions:
+            a.tick(curr_time)
         pixels.show()
-        print('Exiting...')
+        await asyncio.sleep(0.00833)  # 120Hz - without this dt is sometimes too small
