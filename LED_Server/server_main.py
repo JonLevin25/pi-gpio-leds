@@ -1,7 +1,6 @@
 import tornado.web
-from tornado.ioloop import IOLoop
 
-import event_loop
+from LED_Server.event_loop import event_loop
 from LED_Server.actions.action_routers.PixelsActionsRouter import PixelsActionsRouter
 from LED_Server.actions.actions_service import ActionsService
 from LED_Server.discovery.discovery_service import DiscoveryService
