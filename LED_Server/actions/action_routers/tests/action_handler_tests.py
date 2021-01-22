@@ -4,6 +4,7 @@ import unittest
 from LED_Server.actions.action_routers.ActionsRouter import ActionsRouter
 from LED_Server.models.action_models import ActionRequestParam, ActionRequest
 from LED_Server.actions.action_routers.reflection_builder import InvalidParamErrorMode
+from LED_Server.tests_common.mocks import create_mock_pixels_router
 
 
 class TestClass:
@@ -35,6 +36,15 @@ expected_params_0 = {
     'x': 'int',
     'a': 'str'
 }
+
+
+# TODO: separate test suites (classes) to files
+# class RunningActionsCRUDTests(unittest.TestCase):
+#     def test_start_called_on_add(self):
+#         router = create_mock_pixels_router()
+#         test
+#         router.add_action()
+
 
 class FnCallTests(unittest.TestCase):
     def test_json_deserialize_fn_call_and_closure(self):
@@ -87,3 +97,7 @@ class ReflectionBuilderTests(unittest.TestCase):
             self.assertEqual({
                 'test0': expected_params_0,
             }, result)
+
+
+if __name__ == '__main__':
+    unittest.main()

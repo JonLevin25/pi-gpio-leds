@@ -4,17 +4,15 @@ import unittest
 from tornado.testing import AsyncTestCase, gen_test
 
 from LED_Server.event_loop import event_loop
-from LED_Server.actions.action_routers.PixelsActionsRouter import PixelsActionsRouter
 from LED_Server.event_loop.event_loop import FRAME_LENGTH
-from LED_Server.tests_common.TestAction import TestAction
+from LED_Server.tests_common.mocks import TestAction, create_mock_pixels_router
 
 
 class MyTestCase(AsyncTestCase):
     @gen_test
     def test_event_loop_updates_router_running_actions(self):
         # TODO: add OnDestroy, test it as well?
-        router = PixelsActionsRouter(None, {'idontcareaboutthis': lambda: None})
-
+        router = create_mock_pixels_router()
         test_action = TestAction()
 
         router.running_actions = [test_action]  # add action directly so no side effects occur
