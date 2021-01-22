@@ -56,7 +56,7 @@ class ActionsRouter:
 
         return result
 
-    def call_function(self, fn: Callable[[any], None], params: List['ActionRequestParam']):
+    def call_function(self, fn: Callable[..., None], params: List['ActionRequestParam']):
         inspected_params = inspect.signature(fn).parameters
         parsed_params = self._parse_param_dict(fn, inspected_params, params)
 

@@ -1,5 +1,5 @@
 import logging
-from typing import List, Mapping, Callable, Iterable
+from typing import List, Mapping, Callable, Iterable, Union
 
 from neopixel import NeoPixel
 
@@ -8,6 +8,7 @@ from LED_Server.models.action_models import ActionRequestParam
 from Utils.time_util import Time
 from led_actions.base.LedAction import LedAction
 
+PixelActionFn = Callable[..., Union[LedAction, None]]
 
 class PixelsActionsRouter(ActionsRouter):
     '''A simple ActionsRouter that injects "pixels" to args'''
@@ -17,7 +18,7 @@ class PixelsActionsRouter(ActionsRouter):
         self.running_actions = []
         super().__init__(action_map, supported_types=[int, float, str], closure_params={'pixels': pixels})
 
-    def call_function(self, fn: Callable[[any], None], params: List['ActionRequestParam']):
+    def call_function(self, fn: PixelActionFn, params: List['ActionRequestParam']):
         fn_result = super(PixelsActionsRouter, self).call_function(fn, params)
 
         # if its a LedAction - run it exclusively for now

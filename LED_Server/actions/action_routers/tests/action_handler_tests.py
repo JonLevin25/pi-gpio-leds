@@ -8,7 +8,7 @@ from LED_Server.actions.action_routers.reflection_builder import InvalidParamErr
 
 class TestClass:
     def __init__(self, something):
-            self.something = something
+        self.something = something
 
 
 # test is missing type on purpose - shouldnt care
@@ -22,6 +22,7 @@ def testAction1(test: TestClass, x: int, a: str, c):
 
 def testAction2(test: TestClass, x: int, y: set):
     pass
+
 
 def testAction3(x: int):
     logging.info('OK')

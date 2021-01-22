@@ -1,4 +1,7 @@
+import asyncio
+
 import tornado.web
+from tornado.ioloop import IOLoop
 
 from LED_Server.event_loop import event_loop
 from LED_Server.actions.action_routers.PixelsActionsRouter import PixelsActionsRouter
@@ -57,7 +60,6 @@ def init_app() -> Tuple[NeoPixel, PixelsActionsRouter]:
     atexit.register(lambda: on_app_exit(pixels))
 
     print(f'listening on port {PORT}')
-    event_loop.start_pixels_event_loop(router)
 
     return pixels, router
 
@@ -70,7 +72,10 @@ def make_tornado_app(pixels: NeoPixel, router: PixelsActionsRouter):
     ])
 
     application.listen(PORT)
-    # ioloop.start()
+
+    # start event loop
+    lifecycle_coroutine = event_loop.start_pixels_lifecycle_async(router)
+    IOLoop.current().run_sync(lambda: lifecycle_coroutine)
 
 
 def on_app_exit(pixels):
