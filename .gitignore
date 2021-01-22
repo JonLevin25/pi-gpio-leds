@@ -75,3 +75,4 @@ venv/**/*
 .idea/deployment.xml
 .idea/misc.xml
 .idea/modules.xml
+__pycache__/
