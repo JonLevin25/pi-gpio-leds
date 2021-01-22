@@ -1,5 +1,3 @@
-import asyncio
-
 import tornado.web
 from tornado.ioloop import IOLoop
 
@@ -13,6 +11,8 @@ from led_actions.action_starters import *
 from led_actions.actions.BulgeLedAction import Bulge
 import atexit
 
+from led_actions.actions.FillGapsAction import FillGapsAction
+
 
 def run_test_code(pixels: NeoPixel, router: PixelsActionsRouter):
     golden_yellow = html_to_rgb_bytes("#ff9900")
@@ -20,7 +20,6 @@ def run_test_code(pixels: NeoPixel, router: PixelsActionsRouter):
     purple = html_to_rgb_bytes("#792d9f")
     START_COL = COL_RED
 
-    Actions_Basic.autoshow(pixels, True)
     pixels.brightness = 1
     pixels.fill(START_COL)
 
@@ -29,20 +28,16 @@ def run_test_code(pixels: NeoPixel, router: PixelsActionsRouter):
     # pixels.brightness = 0.5
     # return
 
-    # prange = NeoPixelRange(pixels, slice(3, len(pixels), 4))
-    # prange.set_colors(COL_BLACK)
-    # prange.show()
-
-    # set_colors_action = lambda: Actions_Basic.set_sequential(pixels, 0, 0.1)
-    # fillgapsaction = FillGapsAction(pixels, set_colors_action,
-    #     fill_length=3, gap_length=1, half_cycle_time=0.2,
-    #     min_brightness=0.2, max_brightness=1.0, on_halfcycle=None)
+    set_colors_action = lambda: Actions_Basic.set_sequential(pixels, 0, 0.1)
+    fillgapsaction = FillGapsAction(pixels, set_colors_action,
+        fill_length=3, gap_length=2, half_cycle_time=3,
+        min_brightness=0.2, max_brightness=1.0)
 
     router.add_actions([
-        # fillgapsaction,
+        fillgapsaction,
         # Actions_Breathe.bright_pingpong_2(pixels, 1.5),
         # Actions_ColorCycle.colorcylce(pixels, 6),
-        Bulge(3, pixels, START_COL, rand_deep_color, 0.0055),  # TODO: Easing
+        # Bulge(3, pixels, START_COL, rand_deep_color, 0.0055),  # TODO: Easing
     ])
 
 

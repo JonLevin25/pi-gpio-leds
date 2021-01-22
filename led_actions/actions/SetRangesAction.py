@@ -18,6 +18,7 @@ class SetRangesAction(LedAction):
         self._apply_color()
 
     def _update(self, t: float, dt: float):
+        # print(f'set range({self.pixels}, {self.color})')
         self._apply_color()
 
     def _apply_color(self):
