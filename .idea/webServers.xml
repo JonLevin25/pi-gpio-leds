@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="98ac8d24-cf02-42a6-82a2-9b0ae533d7e9" name="temp">
+        <fileTransfer rootFolder="/home/pi/jon_scripts/synced_pi_gpio_test" accessType="SFTP" host="RPI_VOYAGER_HOSTS" port="22" sshConfigId="e8bb5601-1ee1-491e-ba04-6fafbc1bc38b" sshConfig="pi@RPI_VOYAGER_HOSTS:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
