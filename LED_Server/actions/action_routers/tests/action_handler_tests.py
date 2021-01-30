@@ -50,7 +50,7 @@ class FnCallTests(unittest.TestCase):
     def test_json_deserialize_fn_call_and_closure(self):
         router0 = ActionsRouter({'test0': testAction0}, supported_types, closure_params)
         action_json = '{"name":"test0", "params":[{"name": "x", "value": "3"}, {"name": "a", "value": "test"}]}'
-        action_request = ActionRequest.fromDecodedJson(json.loads(action_json))
+        action_request = ActionRequest.populate(json.loads(action_json))
 
         with self.assertLogs(level='INFO') as log:
             router0.handle(action_request)

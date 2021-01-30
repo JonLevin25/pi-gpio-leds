@@ -8,8 +8,10 @@ class ActionRequestParam:
         self.value = value
 
     @classmethod
-    def fromDecodedJson(cls, obj) -> 'ActionRequestParam':
-        return ActionRequestParam(obj['name'], obj['value'])
+    def populate(cls, obj) -> 'ActionRequestParam':
+        # TODO: Use populate
+        # return populate(cls.__init__)
+        return ActionRequestParam(obj['name'], obj['value'], obj['default_value'])
 
 
 class ActionRequest:
@@ -18,7 +20,7 @@ class ActionRequest:
         self.params = params
 
     @classmethod
-    def fromDecodedJson(cls, obj) -> 'ActionRequest':
+    def populate(cls, obj) -> 'ActionRequest':
         name = obj['name']
         params_obj = obj['params']
 
@@ -26,5 +28,5 @@ class ActionRequest:
             logging.error('missing root objects on action request')
             return None
 
-        params = list(map(ActionRequestParam.fromDecodedJson, params_obj))
+        params = list(map(ActionRequestParam.populate, params_obj))
         return ActionRequest(name, params)

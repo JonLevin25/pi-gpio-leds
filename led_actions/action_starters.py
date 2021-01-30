@@ -111,7 +111,7 @@ class Actions_Basic:
 
 class Actions_Breathe:
     @classmethod
-    def breathe_rand(cls, pixels, fnRandCol: ColorGetter, rise_time: float):
+    def breathe_rand(cls, pixels: NeoPixel, fnRandCol: ColorGetter, rise_time: float):
         def on_brightness_halfcycle(i: int):
             print(i)
             if i % 2 == 0:

@@ -25,7 +25,7 @@ class ActionsService(tornado.web.RequestHandler):
         print(f'actions request with body: {jsonBody}')
         try:
             deserialized_json = json.loads(jsonBody)
-            action_request = ActionRequest.fromDecodedJson(deserialized_json)
+            action_request = ActionRequest.populate(deserialized_json)
         except JSONDecodeError:
             self.write_and_err(400, 'Error parsing JSON')
             return
