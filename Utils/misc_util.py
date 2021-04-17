@@ -39,7 +39,7 @@ def reslice(orig_slice: slice, s2: slice, src_len):
 
 def slice_idxs(s: slice, src_len: int) -> Iterable[int]:
     stop = min(s.stop, src_len)
-    yield from range(s.start, stop, s.step)
+    yield from range(s.start, stop, s.step or 1)
 
 
 def max_slice_len(start: int, stop: int, step: int):
