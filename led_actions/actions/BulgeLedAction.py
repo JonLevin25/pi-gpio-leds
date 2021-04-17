@@ -10,46 +10,6 @@ from random import Random
 random = Random()
 
 
-def mapTo(x: float, srcRange: Tuple[float, float], destRange: Tuple[float, float]):
-    srcDelta = srcRange[1] - srcRange[0]
-    t = (x - srcRange[0]) / srcDelta
-
-    destDelta = destRange[1] - destRange[0]
-    return destRange[0] + (t * destDelta)
-
-
-def color_lerp_hsv(t: float, from_col: RGBBytesColor, to_col: RGBBytesColor):
-    f_h, f_s, f_l = get_hsv(from_col)
-    t_h, t_s, t_l = get_hsv(to_col)
-
-    posdelta = t_h - f_h
-    negdelta = -(256-t_h) - f_h
-    if abs(negdelta) < abs(posdelta):
-        t_h -= 256
-
-    h = mapTo(t, (0, 1), (f_h, t_h))
-    s = mapTo(t, (0, 1), (f_s, t_s))
-    l = mapTo(t, (0, 1), (f_l, t_l))
-
-    if (h < 0):
-        h += 256
-    return get_rgb_bytes(h, s, l)
-
-
-def color_lerp_rgb(t: float, from_col: RGBBytesColor, to_col: RGBBytesColor):
-    f_r, f_g, f_b = from_col
-    t_r, t_g, t_b = to_col
-
-    raw_r = lerpInt(t, f_r, t_r)
-    raw_g = lerpInt(t, f_g, t_g)
-    raw_b = lerpInt(t, f_b, t_b)
-
-    r = clampInt(raw_r, 0, 255)
-    g = clampInt(raw_g, 0, 255)
-    b = clampInt(raw_b, 0, 255)
-
-    return (r, g, b)
-
 
 class PrintAvg:
     def __init__(self, samples, every):

@@ -10,7 +10,7 @@ def get_generic_type_info(t: type) -> (type, Tuple[type]):
         return (None, t)
     return t.__origin__, t.__args__
 
-def populate(init: Callable[[...], any], dict: Mapping[str, any]):
+def populate(init: Callable[[any], any], dict: Mapping[str, any]):
     def get_param_type(param: inspect.Parameter):
         param_type = param.annotation
 

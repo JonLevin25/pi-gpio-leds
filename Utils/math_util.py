@@ -1,4 +1,4 @@
-from typing import Union, TypeVar
+from typing import Union, TypeVar, Tuple
 
 FloatOrInt = TypeVar('FloatOrInt', int, float)
 
@@ -42,3 +42,10 @@ def clampInt(value: int, floor_val: int, ceil_val: int):
     elif value > ceil_val:
         return ceil_val
     return value
+
+def mapTo(x: float, srcRange: Tuple[float, float], destRange: Tuple[float, float]):
+    srcDelta = srcRange[1] - srcRange[0]
+    t = (x - srcRange[0]) / srcDelta
+
+    destDelta = destRange[1] - destRange[0]
+    return destRange[0] + (t * destDelta)
