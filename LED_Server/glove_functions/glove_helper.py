@@ -20,7 +20,7 @@ FINGER_RING = 2
 FINGER_PINKY = 3
 # FINGER_THUMB = 4
 
-def index_finger_action(pixels: NeoPixel, name: str):
+def left_idx_finger_action(pixels: NeoPixel, name: str):
     return fastFlashLtR(pixels, COL_BLUE, name)
 
 def left_mid_finger_action(pixels, name: str):
@@ -28,8 +28,8 @@ def left_mid_finger_action(pixels, name: str):
 
 
 finger_dict = {
-    (HAND_LEFT, FINGER_IDX): FlashFinger(HAND_LEFT, FINGER_IDX, left_mid_finger_action, "LEFT INDEX", holdable= True),
-    (HAND_LEFT, FINGER_MID): FlashFinger(HAND_LEFT, FINGER_MID, left_mid_finger_action, "LEFT MIDDLE", holdable= True),
+    (HAND_LEFT, FINGER_IDX): FlashFinger("LEFT INDEX", HAND_LEFT, FINGER_IDX, left_idx_finger_action, holdAction= left_idx_finger_action),
+    (HAND_LEFT, FINGER_MID): FlashFinger("LEFT MIDDLE", HAND_LEFT, FINGER_MID, left_mid_finger_action, holdAction= left_mid_finger_action),
     (HAND_LEFT, FINGER_RING): None,
     (HAND_LEFT, FINGER_PINKY): None,
 
@@ -43,7 +43,11 @@ def on_glove_finger_down(pixels: NeoPixel, hand: int, finger: int) -> Union[LedA
     finger = finger_dict[(hand, finger)]
     return finger.on_finger_down(pixels)
 
-def on_glove_finger_up(pixels: NeoPixel, hand: int, finger: int) -> Union[LedAction, None]:
+def on_glove_finger_press(pixels: NeoPixel, hand: int, finger: int):
+    finger = finger_dict[(hand, finger)]
+    return finger.on_finger_press(pixels)
+
+def on_glove_finger_up(pixels: NeoPixel, hand: int, finger: int):
     finger = finger_dict[(hand, finger)]
     return finger.on_finger_up(pixels)
 

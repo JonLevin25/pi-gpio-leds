@@ -1,18 +1,17 @@
 import asyncio
+import time
 from typing import Callable
 
 from neopixel import NeoPixel
 from tornado.ioloop import IOLoop
 
+from LED_Server.glove_functions import GLOVE_HACKS
+
 
 class Finger:
-    def __init__(self,
-                 hand: int, finger: int,
-                 name: str,
-                 holdable: bool):
+    def __init__(self, name: str, hand: int, finger: int):
         self.hand = hand
         self.finger = finger
-        self.holdable = holdable
         self.name = name
         self.action = None
 
@@ -25,32 +24,35 @@ class Finger:
 
 class FlashFinger(Finger):
     def __init__(self,
+                 name: str,
                  hand: int, finger: int,
                  flashFunc: Callable[[NeoPixel, str], "GloveFingerFlashAction"],
-                 name: str,
-                 holdable: bool):
-        super().__init__(hand, finger, name, holdable)
+                 holdAction: Callable[[NeoPixel, str], "LedAction"]):
+        super().__init__(name, hand, finger)
         self.flashFunc = flashFunc
         self.is_pressed = False
+        self.last_press_timestamp = -9999
+        self.holdFlashFunc = holdAction
 
     def on_finger_down(self, pixels: NeoPixel):
         print(f"[{self.name}] Finger down")
         action = self.flashFunc(pixels, self.name)
         self.action = action
         self.is_pressed = True
-        # asyncio.create_task(self.finger_press_loop(pixels))
+        self.last_press_timestamp = time.time()
         return action
 
-    # Get finger press from glove
-    # async def finger_press_loop(self, pixels: NeoPixel):
-    #     while self.is_pressed:
-    #         await asyncio.sleep(0.200)
-    #         self.on_finger_press(pixels)
-
-
     def on_finger_press(self, pixels: NeoPixel):
+        if not self.holdFlashFunc: return
+
+        curTime = time.time()
+        if curTime - self.last_press_timestamp < GLOVE_HACKS.FINGER_PRESS_COOLDOWN:
+            return
+
         print(f"[{self.name}] Finger press")
-        if not self.action: return
+        self.action = self.holdFlashFunc(pixels, self.name)
+        self.last_press_timestamp = curTime
+        return self.action
 
 
     def on_finger_up(self, pixels: NeoPixel):
