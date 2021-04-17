@@ -13,9 +13,10 @@ PixelActionFn = Callable[..., Union[LedAction, None]]
 class PixelsActionsRouter(ActionsRouter):
     '''A simple ActionsRouter that injects "pixels" to args'''
 
-    def __init__(self, pixels: NeoPixel, action_map: Mapping[str, Callable]):
+    def __init__(self, pixels: NeoPixel, action_map: Mapping[str, Callable], allow_multi_actions: bool):
         self.pixels = pixels
         self.running_actions = []
+        self.allow_multi_actions = allow_multi_actions
         super().__init__(action_map, supported_types=[int, float, str], closure_params={'pixels': pixels})
 
     def call_function(self, fn: PixelActionFn, params: List['ActionRequestParam']):
@@ -23,7 +24,8 @@ class PixelsActionsRouter(ActionsRouter):
 
         # if its a LedAction - run it exclusively for now
         if isinstance(fn_result, LedAction):
-            self.clear_running_actions()
+            if not self.allow_multi_actions:
+                self.clear_running_actions()
             self.add_action(fn_result)
         self.pixels.show()
 

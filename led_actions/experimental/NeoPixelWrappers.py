@@ -74,6 +74,7 @@ class NeoPixelRange:
 
 
 
+    ## TODO: Not working - Impl this properly
     def __setitem__(self, index: Union[int, slice], val: Union[RGBBytesColor, List[RGBBytesColor]]):
         if isinstance(index, slice):
             start, stop, step = index.indices(len(self))
