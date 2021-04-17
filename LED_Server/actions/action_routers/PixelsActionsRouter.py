@@ -30,6 +30,7 @@ class PixelsActionsRouter(ActionsRouter):
     def add_actions(self, actions: Iterable[LedAction]):
         for action in actions:
             self.add_action(action)
+            action.subscribe_to_destroy(self.on_action_destroyed)
 
     def add_action(self, action: LedAction):
         if action is None:
@@ -37,6 +38,11 @@ class PixelsActionsRouter(ActionsRouter):
             return
         action.run(Time.now())
         self.running_actions.append(action)
+
+    def on_action_destroyed(self, action: LedAction):
+        print(f"Action {action} destroyed! removing (actionsLen: {len(self.running_actions)})")
+        self.running_actions.remove(action)
+        print(f"Removed. (actionsLen: {len(self.running_actions)})")
 
     def clear_running_actions(self):
         self.running_actions.clear()  # dont replace list (actions = []) - since ref is used by event loop

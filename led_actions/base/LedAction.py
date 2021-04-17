@@ -1,9 +1,12 @@
-from typing import List
+from typing import List, Callable
 
 import neopixel
 
 
 # TODO: Convert to generic "Tween" / "LedAction" class
+from Utils.misc_util import FnVoid
+
+
 class LedAction:
     def __init__(self, pixels: neopixel.NeoPixel, iteration_time: float):
         if iteration_time <= 0:
@@ -14,6 +17,25 @@ class LedAction:
         self.norm_t_offset = 0
         self._enabled = True
         self._didstart = False
+        self._destroyed = False
+
+        self.destroy_callbacks = set()
+
+    def subscribe_to_destroy(self, callback: Callable[["LedAction"], None]):
+        if not callback: return
+        self.destroy_callbacks.add(callback)
+
+    # TODO: TEST THIS WORKS! (set able to find function? no hash collisions?)
+    def unsubscribe_to_destroy(self, callback: FnVoid):
+        self.destroy_callbacks.add(callback)
+
+    #this doesnt remove memory, but marks as destroyed. relies on ActionRouter removing it for garbage collection
+    def destroy(self):
+        self.enabled = False
+        self._destroyed = True
+
+        for callback in self.destroy_callbacks:
+            callback(self)
 
     @property
     def enabled(self):
@@ -32,7 +54,7 @@ class LedAction:
         return self.enabled
 
     def tick(self, curr_time: float):
-        if not self.enabled:
+        if self._destroyed or not self.enabled:
             return
 
         dt = curr_time - self.prev_tick

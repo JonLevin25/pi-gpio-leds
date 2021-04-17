@@ -32,8 +32,8 @@ class ActionsService(tornado.web.RequestHandler):
 
         try:
             self.actions_router.handle(action_request)
-        except ValueError:
-            self.write_and_err(400, f'Error applying action from request ({jsonBody})')
+        except ValueError as e:
+            self.write_and_err(400, f'Error applying action from request ({jsonBody})', e)
 
         # self.write('OK')
 
@@ -41,6 +41,6 @@ class ActionsService(tornado.web.RequestHandler):
         self.write("You said: " + msg)
         print("RESPONSE: " + msg)
 
-    def write_and_err(self, code: int, message: str):
+    def write_and_err(self, code: int, message: str, e: Exception):
         self.write_error(code, message = message)
-        print("ERROR: " + message)
+        print(f"{message}\nError: {e}")
