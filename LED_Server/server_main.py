@@ -6,7 +6,9 @@ from LED_Server.actions.action_routers.PixelsActionsRouter import PixelsActionsR
 from LED_Server.actions.actions_service import ActionsService
 from LED_Server.discovery.discovery_service import DiscoveryService
 from CONSTS import *
-from LED_Server.glove_functions.glove_helper import glove_request_handler
+
+from LED_Server.glove_functions import GLOVE_HACKS
+from LED_Server.glove_functions.glove_helper import on_glove_finger_down, on_glove_finger_up, on_glove_finger_press
 
 from led_actions.action_starters import *
 from led_actions.actions.BaseColorLedAction import BaseColorLedAction
@@ -37,7 +39,7 @@ def run_test_code(pixels: NeoPixel, router: PixelsActionsRouter):
 
 
     router.add_actions([
-        BaseColorLedAction(pixels, (127, 127, 127))
+        BaseColorLedAction(pixels, GLOVE_HACKS.BASE_COLOR)
         # fill_gaps_action(3, 2),
         # Actions_Breathe.bright_pingpong_2(pixels, 1.5),
         # Actions_ColorCycle.colorcylce(pixels, 6),
@@ -49,7 +51,9 @@ def init_app() -> Tuple[NeoPixel, PixelsActionsRouter]:
     print('initializing pixels')
     pixels = event_loop.init_pixels(30)
     router = PixelsActionsRouter(pixels, {
-        'glove_finger': glove_request_handler,
+        'glove_finger_down': on_glove_finger_down,
+        'glove_finger_press': on_glove_finger_press,
+        'glove_finger_up': on_glove_finger_up,
         'brightness': set_brightness,
         'rand_color': test_fill_rand,
         'set_sequential': Actions_Basic.set_sequential,
