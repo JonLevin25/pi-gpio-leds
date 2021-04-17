@@ -42,7 +42,7 @@ def populate(init: Callable[[...], any], dict: Mapping[str, any]):
 
 
 class ActionRequestParam:
-    def __init__(self, name: str, value: str):
+    def __init__(self, name: str, value: str, default_value:str):
         self.name = name
         self.value = value
 

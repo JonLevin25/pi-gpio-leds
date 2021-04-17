@@ -6,6 +6,7 @@ from LED_Server.actions.action_routers.PixelsActionsRouter import PixelsActionsR
 from LED_Server.actions.actions_service import ActionsService
 from LED_Server.discovery.discovery_service import DiscoveryService
 from CONSTS import *
+from LED_Server.glove_functions.glove_helper import glove_request_handler
 
 from led_actions.action_starters import *
 from led_actions.actions.BulgeLedAction import Bulge
@@ -53,6 +54,7 @@ def init_app() -> Tuple[NeoPixel, PixelsActionsRouter]:
     print('initializing pixels')
     pixels = event_loop.init_pixels(30)
     router = PixelsActionsRouter(pixels, {
+        'glove_finger': glove_request_handler,
         'brightness': set_brightness,
         'rand_color': test_fill_rand,
         'set_sequential': Actions_Basic.set_sequential,
