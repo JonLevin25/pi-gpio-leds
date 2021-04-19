@@ -38,11 +38,8 @@ class FlashFinger(Finger):
 
     def on_tilt_down(self, pixels: NeoPixel):
         # print(f"[{self.name}] Tilt down")
-
         self.action = None
         self.tilt_held = False
-
-        asyncio.create_task(self.tilt_hold_loop(pixels))
 
     def on_tilt_hold(self, pixels: NeoPixel):
         if not self.holdFlashFunc: return
@@ -54,6 +51,7 @@ class FlashFinger(Finger):
     def on_tilt_up(self, pixels: NeoPixel):
         print(f"[{self.name}] Tilt up")
         action = self.flashFunc(pixels, self.name)
+        asyncio.create_task(self.tilt_hold_loop(pixels))
         self.action = action
         self.tilt_held = True
         return action
@@ -75,7 +73,7 @@ class FlashFinger(Finger):
         last_call_timestamp = time.time()
         while self.btn_held:
             curTime = time.time()
-            if curTime - last_call_timestamp > GLOVE_HACKS.FINGER_PRESS_COOLDOWN_MILLIS:
+            if curTime - last_call_timestamp > GLOVE_HACKS.FINGER_PRESS_COOLDOWN_SECS:
                 self.on_finger_hold(pixels)
                 last_call_timestamp = curTime
             await asyncio.sleep(0.200)
@@ -84,7 +82,7 @@ class FlashFinger(Finger):
         last_call_timestamp = time.time()
         while self.tilt_held:
             curTime = time.time()
-            if curTime - last_call_timestamp > GLOVE_HACKS.FINGER_PRESS_COOLDOWN_MILLIS:
+            if curTime - last_call_timestamp > GLOVE_HACKS.FINGER_PRESS_COOLDOWN_SECS:
                 action = self.on_tilt_hold(pixels)
                 if action:
                     GLOVE_HACKS.router.add_action(action)
