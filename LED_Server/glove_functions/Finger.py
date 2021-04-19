@@ -6,7 +6,7 @@ from neopixel import NeoPixel
 from tornado.ioloop import IOLoop
 
 from LED_Server.glove_functions import GLOVE_HACKS
-from Utils.color_util import RGBBytesColor
+from Utils.color_util import RGBBytesColor, color_lerp_rgb
 
 
 class Finger:
@@ -37,9 +37,8 @@ class FlashFinger(Finger):
         self.color = color
 
     def on_tilt_down(self, pixels: NeoPixel):
-        # print(f"[{self.name}] Tilt down")
-        self.action = None
-        self.tilt_held = False
+        print(f"[{self.name}] Tilt down")
+        self.tilt_action_start(pixels)
 
     def on_tilt_hold(self, pixels: NeoPixel):
         if not self.holdFlashFunc: return
@@ -50,24 +49,23 @@ class FlashFinger(Finger):
 
     def on_tilt_up(self, pixels: NeoPixel):
         print(f"[{self.name}] Tilt up")
-        action = self.flashFunc(pixels, self.name)
-        asyncio.create_task(self.tilt_hold_loop(pixels))
-        self.action = action
-        self.tilt_held = True
-        return action
+        self.tilt_action_stop(pixels)
 
     def on_finger_down(self, pixels: NeoPixel):
         print(f"[{self.name}] Finger down")
-        GLOVE_HACKS.CURR_HAND_COLORS[self.hand] = self.color
+        asyncio.create_task(self.hold_loop(pixels))
+        self.btn_held = True
 
     def on_finger_hold(self, pixels: NeoPixel):
         # print(f"[{self.name}] Finger hold")
-        pass
-
+        GLOVE_HACKS.CURR_HAND_COLORS[self.hand] = self.color
+        if self.action:
+            self.action.color = color_lerp_rgb(0.05, self.action.color, self.color)
 
     def on_finger_up(self, pixels: NeoPixel):
         print(f"[{self.name}] Finger up")
         self.btn_held = False
+
 
     async def hold_loop(self, pixels: NeoPixel):
         last_call_timestamp = time.time()
@@ -88,3 +86,15 @@ class FlashFinger(Finger):
                     GLOVE_HACKS.router.add_action(action)
                 last_call_timestamp = curTime
             await asyncio.sleep(0.200)
+
+
+    def tilt_action_start(self, pixels: NeoPixel):
+        action = self.flashFunc(pixels, self.name)
+        asyncio.create_task(self.tilt_hold_loop(pixels))
+        self.action = action
+        self.tilt_held = True
+        return action
+
+    def tilt_action_stop(self, pixels: NeoPixel):
+        self.action = None
+        self.tilt_held = False

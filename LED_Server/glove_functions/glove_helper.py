@@ -73,23 +73,25 @@ def fastFlashLtR(pixels, color: RGBBytesColor, name: str="GENERIC") -> 'GloveFin
     return GloveFingerFlashAction(pixels,
                                   range(0, 30),
                                   delta_led_lightup=GLOVE_HACKS.FAST_LED_DELTA, anim_time=GLOVE_HACKS.FAST_LED_ANIM_TIME,
-                                  target_col=color,
+                                  color=color,
                                   name=name)
 
 def fastFlashRtL(pixels, color: RGBBytesColor, name: str="GENERIC") -> 'GloveFingerFlashAction':
     return GloveFingerFlashAction(pixels,
                                   range(29, -1, -1),
                                   delta_led_lightup=GLOVE_HACKS.FAST_LED_DELTA, anim_time=GLOVE_HACKS.FAST_LED_ANIM_TIME,
-                                  target_col=color,
+                                  color=color,
                                   name=name)
 
+class colorChangeIndication(LedAction):
+    pass
 
 class GloveFingerFlashAction(LedAction):
     def __init__(self, pixels: Union[NeoPixel],
                  led_range: range,
                  delta_led_lightup: float,
                  anim_time: float,
-                 target_col: RGBBytesColor, # TODO: support list of colors>?
+                 color: RGBBytesColor,  # TODO: support list of colors>?
                  ascending = True,
                  name: str = "GENERIC"):
         super().__init__(pixels=pixels, iteration_time=1)
@@ -97,7 +99,7 @@ class GloveFingerFlashAction(LedAction):
         self.led_range = led_range
         self.delta_led_lightup = delta_led_lightup
         self.anim_time = anim_time
-        self.target_col = target_col
+        self.color = color
         self.pixels = pixels
         self.name = name
 
@@ -117,7 +119,7 @@ class GloveFingerFlashAction(LedAction):
 
         adjusted_t = sin(i_t * pi) * 0.5 + 0.5
 
-        return color_lerp_rgb(adjusted_t, cur_pix_col, self.target_col)
+        return color_lerp_rgb(adjusted_t, cur_pix_col, self.color)
 
     def _update(self, t: float, dt: float):
         if t > self.start_time + self.destroy_t_offset:
@@ -131,5 +133,5 @@ class GloveFingerFlashAction(LedAction):
             # else:
             #     self.pixels[led_i] = self.pixels[led_i]
             col = self._get_led_col(t, cur_pix_col, i)
-            self.pixels[i] = col
+            self.pixels[led_i] = col
         pass
