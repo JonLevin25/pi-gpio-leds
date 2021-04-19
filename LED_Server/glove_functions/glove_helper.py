@@ -12,16 +12,16 @@ from led_actions.base.LedAction import LedAction
 
 
 def left_idx_finger_action(pixels: NeoPixel, name: str):
-    return fastFlashLtR(pixels, GLOVE_HACKS.leftColor(), name)
+    return fastFlashLtR(pixels, COL_RED, name)
 
 def left_mid_finger_action(pixels, name: str):
-    return fastFlashLtR(pixels, GLOVE_HACKS.leftColor(), name)
+    return fastFlashLtR(pixels, COL_BLUE, name)
 
 def right_idx_finger_action(pixels: NeoPixel, name: str):
-    return fastFlashRtL(pixels, GLOVE_HACKS.rightColor(), name)
+    return fastFlashRtL(pixels, COL_RED, name)
 
 def right_mid_finger_action(pixels, name: str):
-    return fastFlashRtL(pixels, GLOVE_HACKS.rightColor(), name)
+    return fastFlashRtL(pixels, COL_BLUE, name)
 
 
 finger_dict = {
@@ -69,19 +69,22 @@ def on_glove_finger_tilt_up(pixels: NeoPixel, hand: int, finger: int):
     return finger.on_tilt_up(pixels)
 
 
+def one_thirds_idx(pixels):
+    return int(len(pixels)* 0.33333)
+
 def two_thirds_idx(pixels):
     return int(len(pixels)* 0.6666)
 
 def fastFlashLtR(pixels, color: RGBBytesColor, name: str="GENERIC") -> 'GloveFingerFlashAction':
     return GloveFingerFlashAction(pixels,
-                                  range(0, two_thirds_idx(pixels)),
+                                  range(0, 30),
                                   delta_led_lightup=GLOVE_HACKS.FAST_LED_DELTA, anim_time=GLOVE_HACKS.FAST_LED_ANIM_TIME,
                                   color=color,
                                   name=name)
 
 def fastFlashRtL(pixels, color: RGBBytesColor, name: str="GENERIC") -> 'GloveFingerFlashAction':
     return GloveFingerFlashAction(pixels,
-                                  range(len(pixels)-1,   two_thirds_idx(pixels)-1, -1),
+                                  range(29,-1,-1),
                                   delta_led_lightup=GLOVE_HACKS.FAST_LED_DELTA, anim_time=GLOVE_HACKS.FAST_LED_ANIM_TIME,
                                   color=color,
                                   name=name)
