@@ -8,7 +8,8 @@ from LED_Server.discovery.discovery_service import DiscoveryService
 from CONSTS import *
 
 from LED_Server.glove_functions import GLOVE_HACKS
-from LED_Server.glove_functions.glove_helper import on_glove_finger_down, on_glove_finger_up, on_glove_finger_press
+from LED_Server.glove_functions.glove_helper import on_glove_finger_down, on_glove_finger_up, on_glove_finger_hold, \
+    on_glove_finger_tilt_down, on_glove_finger_tilt_up, on_glove_finger_tilt_hold
 
 from led_actions.action_starters import *
 from led_actions.actions.BaseColorLedAction import BaseColorLedAction
@@ -52,8 +53,11 @@ def init_app() -> Tuple[NeoPixel, PixelsActionsRouter]:
     pixels = event_loop.init_pixels(30)
     router = PixelsActionsRouter(pixels, {
         'glove_finger_down': on_glove_finger_down,
-        'glove_finger_press': on_glove_finger_press,
+        # 'glove_finger_hold': on_glove_finger_hold,
         'glove_finger_up': on_glove_finger_up,
+        'glove_finger_tilt_down': on_glove_finger_tilt_down,
+        # 'glove_finger_tilt_hold': on_glove_finger_tilt_hold,
+        'glove_finger_tilt_up': on_glove_finger_tilt_up,
         'brightness': set_brightness,
         'rand_color': test_fill_rand,
         'set_sequential': Actions_Basic.set_sequential,

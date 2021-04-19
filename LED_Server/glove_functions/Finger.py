@@ -34,6 +34,18 @@ class FlashFinger(Finger):
         self.last_press_timestamp = -9999
         self.holdFlashFunc = holdAction
 
+    def on_tilt_down(self, pixels: NeoPixel):
+        print(f"[{self.name}] Tilt down")
+        pass
+
+    def on_tilt_hold(self, pixels: NeoPixel):
+        print(f"[{self.name}] Tilt hold")
+        pass
+
+    def on_tilt_up(self, pixels: NeoPixel):
+        print(f"[{self.name}] Tilt up")
+        pass
+
     def on_finger_down(self, pixels: NeoPixel):
         print(f"[{self.name}] Finger down")
         action = self.flashFunc(pixels, self.name)
