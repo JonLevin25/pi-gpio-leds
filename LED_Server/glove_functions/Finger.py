@@ -41,32 +41,34 @@ class FlashFinger(Finger):
     # raw callbacks - can switch start/stop to invert
     def on_tilt_down(self, pixels: NeoPixel):
         print(f"[{self.name}] Tilt down")
-        self.on_tilt_stopped(pixels)
+        return self.on_tilt_stopped(pixels)
 
     def on_tilt_up(self, pixels: NeoPixel):
         print(f"[{self.name}] Tilt up")
-        self.self.on_btn_started(pixels)
+        return self.on_tilt_started(pixels)
 
     def on_finger_down(self, pixels: NeoPixel):
         print(f"[{self.name}] Finger down")
-        self.on_btn_started(pixels)
+        return self.on_btn_started(pixels)
 
     def on_finger_up(self, pixels: NeoPixel):
         print(f"[{self.name}] Finger up")
-        self.on_btn_stopped(pixels)
+        return self.on_btn_stopped(pixels)
 
     ###
     # Main logic
     def on_tilt_started(self, pixels: NeoPixel):
-        action = self.start_action(self.flashFunc, pixels)
         self.tilt_held = True
-
         asyncio.create_task(self.tilt_hold_loop(pixels))
-        return action
+
 
     def on_tilt_hold(self, pixels: NeoPixel):
         # print(f"[{self.name}] Tilt hold")
-        return self.start_action(self.holdFlashFunc, pixels)
+        prev_color = GLOVE_HACKS.CURR_HAND_COLORS[self.hand]
+        GLOVE_HACKS.CURR_HAND_COLORS[self.hand] = color_lerp_rgb(0.05, prev_color, self.color)
+        # for action in self.actions:
+        #     action.color = color_lerp_rgb(0.05, action.color, self.color)
+
 
     def on_tilt_stopped(self, pixels: NeoPixel):
         self.tilt_held = False
@@ -74,13 +76,14 @@ class FlashFinger(Finger):
 
     def on_btn_started(self, pixels):
         self.btn_held = True
-        asyncio.create_task(self.btn_hold_loop(pixels))
+        action = self.start_action(self.flashFunc, pixels)
 
-    def on_button_hold(self, pixels: NeoPixel):
+        asyncio.create_task(self.btn_hold_loop(pixels))
+        return action
+
+    def on_btn_hold(self, pixels: NeoPixel):
         # print(f"[{self.name}] Finger hold")
-        GLOVE_HACKS.CURR_HAND_COLORS[self.hand] = self.color
-        for action in self.actions:
-            action.color = color_lerp_rgb(0.05, action.color, self.color)
+        return self.start_action(self.holdFlashFunc, pixels)
 
     def on_btn_stopped(self, pixels):
         self.btn_held = False
@@ -105,7 +108,9 @@ class FlashFinger(Finger):
         while self.btn_held:
             curTime = time.time()
             if curTime - last_call_timestamp > GLOVE_HACKS.FINGER_PRESS_COOLDOWN_SECS:
-                self.on_button_hold(pixels)
+                action = self.on_btn_hold(pixels)
+                if action:
+                    GLOVE_HACKS.router.add_action(action)
                 last_call_timestamp = curTime
             await asyncio.sleep(0.200)
 
