@@ -1,4 +1,5 @@
 from typing import List, Callable
+import uuid
 
 import neopixel
 
@@ -18,6 +19,7 @@ class LedAction:
         self._enabled = True
         self._didstart = False
         self._destroyed = False
+        self.uuid = str(uuid.uuid4())[9:18]
 
         self.destroy_callbacks = set()
 
@@ -36,6 +38,9 @@ class LedAction:
 
         for callback in self.destroy_callbacks:
             callback(self)
+
+    def __repr__(self):
+        return f'<{type(self).__name__} {self.uuid}>'
 
     @property
     def enabled(self):
