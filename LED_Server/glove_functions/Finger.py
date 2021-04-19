@@ -41,11 +41,11 @@ class FlashFinger(Finger):
     # raw callbacks - can switch start/stop to invert
     def on_tilt_down(self, pixels: NeoPixel):
         print(f"[{self.name}] Tilt down")
-        return self.on_tilt_stopped(pixels)
+        return self.on_tilt_started(pixels)
 
     def on_tilt_up(self, pixels: NeoPixel):
         print(f"[{self.name}] Tilt up")
-        return self.on_tilt_started(pixels)
+        return self.on_tilt_stopped(pixels)
 
     def on_finger_down(self, pixels: NeoPixel):
         print(f"[{self.name}] Finger down")
@@ -65,7 +65,7 @@ class FlashFinger(Finger):
     def on_tilt_hold(self, pixels: NeoPixel):
         # print(f"[{self.name}] Tilt hold")
         prev_color = GLOVE_HACKS.CURR_HAND_COLORS[self.hand]
-        GLOVE_HACKS.CURR_HAND_COLORS[self.hand] = color_lerp_rgb(0.05, prev_color, self.color)
+        GLOVE_HACKS.CURR_HAND_COLORS[self.hand] = color_lerp_rgb(0.65, prev_color, self.color)
         # for action in self.actions:
         #     action.color = color_lerp_rgb(0.05, action.color, self.color)
 

@@ -69,22 +69,22 @@ def on_glove_finger_tilt_up(pixels: NeoPixel, hand: int, finger: int):
     return finger.on_tilt_up(pixels)
 
 
+def two_thirds_idx(pixels):
+    return int(len(pixels)* 0.6666)
+
 def fastFlashLtR(pixels, color: RGBBytesColor, name: str="GENERIC") -> 'GloveFingerFlashAction':
     return GloveFingerFlashAction(pixels,
-                                  range(0, 30),
+                                  range(0, two_thirds_idx(pixels)),
                                   delta_led_lightup=GLOVE_HACKS.FAST_LED_DELTA, anim_time=GLOVE_HACKS.FAST_LED_ANIM_TIME,
                                   color=color,
                                   name=name)
 
 def fastFlashRtL(pixels, color: RGBBytesColor, name: str="GENERIC") -> 'GloveFingerFlashAction':
     return GloveFingerFlashAction(pixels,
-                                  range(29, -1, -1),
+                                  range(len(pixels)-1,   two_thirds_idx(pixels)-1, -1),
                                   delta_led_lightup=GLOVE_HACKS.FAST_LED_DELTA, anim_time=GLOVE_HACKS.FAST_LED_ANIM_TIME,
                                   color=color,
                                   name=name)
-
-class colorChangeIndication(LedAction):
-    pass
 
 class GloveFingerFlashAction(LedAction):
     def __init__(self, pixels: Union[NeoPixel],
