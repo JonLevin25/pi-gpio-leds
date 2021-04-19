@@ -8,8 +8,7 @@ from LED_Server.discovery.discovery_service import DiscoveryService
 from CONSTS import *
 
 from LED_Server.glove_functions import GLOVE_HACKS
-from LED_Server.glove_functions.glove_helper import on_glove_finger_down, on_glove_finger_up, on_glove_finger_hold, \
-    on_glove_finger_tilt_down, on_glove_finger_tilt_up, on_glove_finger_tilt_hold
+from LED_Server.glove_functions.glove_helper import on_glove_finger_down, on_glove_finger_up, on_glove_finger_tilt_down, on_glove_finger_tilt_up
 
 from led_actions.action_starters import *
 from led_actions.actions.BaseColorLedAction import BaseColorLedAction
@@ -65,6 +64,8 @@ def init_app() -> Tuple[NeoPixel, PixelsActionsRouter]:
         'fill_gaps_action': fill_gaps_action,
     },
         allow_multi_actions=True)
+
+    GLOVE_HACKS.router = router
 
     run_test_code(pixels, router)
     atexit.register(lambda: on_app_exit(pixels))

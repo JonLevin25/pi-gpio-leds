@@ -1,46 +1,41 @@
 from math import sin, pi
-from typing import Union, Callable, Mapping
 
-import pytweening
 from neopixel import NeoPixel
 
 from LED_Server.glove_functions import GLOVE_HACKS
 from LED_Server.glove_functions.Finger import FlashFinger
+from LED_Server.glove_functions.GLOVE_HACKS import HAND_LEFT, HAND_RIGHT, FINGER_IDX, FINGER_MID, FINGER_RING, \
+    FINGER_PINKY
 from Utils.color_util import *
 from Utils.math_util import *
 from led_actions.base.LedAction import LedAction
-from led_actions.experimental.NeoPixelWrappers import NeoPixelRange
 
-HAND_LEFT = 0
-HAND_RIGHT = 1
-
-FINGER_IDX = 0
-FINGER_MID = 1
-FINGER_RING = 2
-FINGER_PINKY = 3
-# FINGER_THUMB = 4
 
 def left_idx_finger_action(pixels: NeoPixel, name: str):
-    return fastFlashLtR(pixels, COL_BLUE, name)
+    return fastFlashLtR(pixels, GLOVE_HACKS.leftColor(), name)
 
 def left_mid_finger_action(pixels, name: str):
-    return fastFlashLtR(pixels, COL_RED, name)
+    return fastFlashLtR(pixels, GLOVE_HACKS.leftColor(), name)
 
 def right_idx_finger_action(pixels: NeoPixel, name: str):
-    return fastFlashLtR(pixels, COL_BLUE, name)
+    return fastFlashRtL(pixels, GLOVE_HACKS.rightColor(), name)
 
 def right_mid_finger_action(pixels, name: str):
-    return fastFlashLtR(pixels, COL_RED, name)
+    return fastFlashRtL(pixels, GLOVE_HACKS.rightColor(), name)
 
 
 finger_dict = {
-    (HAND_LEFT, FINGER_IDX): FlashFinger("LEFT INDEX", HAND_LEFT, FINGER_IDX, left_idx_finger_action, holdAction= left_idx_finger_action),
-    (HAND_LEFT, FINGER_MID): FlashFinger("LEFT MIDDLE", HAND_LEFT, FINGER_MID, left_mid_finger_action, holdAction= left_mid_finger_action),
+    (HAND_LEFT, FINGER_IDX): FlashFinger("LEFT INDEX", HAND_LEFT, FINGER_IDX, GLOVE_HACKS.IDX_FINGER_COL,
+                                         left_idx_finger_action, holdAction= left_idx_finger_action),
+    (HAND_LEFT, FINGER_MID): FlashFinger("LEFT MIDDLE", HAND_LEFT, FINGER_MID, GLOVE_HACKS.MID_FINGER_COL,
+                                         left_mid_finger_action, holdAction= left_mid_finger_action),
     (HAND_LEFT, FINGER_RING): None,
     (HAND_LEFT, FINGER_PINKY): None,
 
-    (HAND_RIGHT, FINGER_IDX): FlashFinger("RIGHT INDEX", HAND_RIGHT, FINGER_IDX, right_idx_finger_action, holdAction= right_idx_finger_action),
-    (HAND_RIGHT, FINGER_MID): FlashFinger("RIGHT MIDDLE", HAND_RIGHT, FINGER_MID, right_mid_finger_action, holdAction= right_mid_finger_action),
+    (HAND_RIGHT, FINGER_IDX): FlashFinger("RIGHT INDEX", HAND_RIGHT, FINGER_IDX, GLOVE_HACKS.IDX_FINGER_COL,
+                                          right_idx_finger_action, holdAction= right_idx_finger_action),
+    (HAND_RIGHT, FINGER_MID): FlashFinger("RIGHT MIDDLE", HAND_RIGHT, FINGER_MID, GLOVE_HACKS.MID_FINGER_COL,
+                                          right_mid_finger_action, holdAction= right_mid_finger_action),
     (HAND_RIGHT, FINGER_RING): None,
     (HAND_RIGHT, FINGER_PINKY): None,
 }
@@ -50,9 +45,10 @@ def on_glove_finger_down(pixels: NeoPixel, hand: int, finger: int) -> Union[LedA
     finger = finger_dict[(hand, finger)]
     return finger.on_finger_down(pixels)
 
-def on_glove_finger_hold(pixels: NeoPixel, hand: int, finger: int):
-    finger = finger_dict[(hand, finger)]
-    return finger.on_finger_press(pixels)
+#impl here, not in glove
+# def on_glove_finger_hold(pixels: NeoPixel, hand: int, finger: int):
+#     finger = finger_dict[(hand, finger)]
+#     return finger.on_finger_hold(pixels)
 
 def on_glove_finger_up(pixels: NeoPixel, hand: int, finger: int):
     finger = finger_dict[(hand, finger)]
@@ -63,9 +59,10 @@ def on_glove_finger_tilt_down(pixels: NeoPixel, hand: int, finger: int):
     finger = finger_dict[(hand, finger)]
     return finger.on_tilt_down(pixels)
 
-def on_glove_finger_tilt_hold(pixels: NeoPixel, hand: int, finger: int):
-    finger = finger_dict[(hand, finger)]
-    return finger.on_tilt_hold(pixels)
+#impl here, not in glove
+# def on_glove_finger_tilt_hold(pixels: NeoPixel, hand: int, finger: int):
+#     finger = finger_dict[(hand, finger)]
+#     return finger.on_tilt_hold(pixels)
 
 def on_glove_finger_tilt_up(pixels: NeoPixel, hand: int, finger: int):
     finger = finger_dict[(hand, finger)]
@@ -74,14 +71,14 @@ def on_glove_finger_tilt_up(pixels: NeoPixel, hand: int, finger: int):
 
 def fastFlashLtR(pixels, color: RGBBytesColor, name: str="GENERIC") -> 'GloveFingerFlashAction':
     return GloveFingerFlashAction(pixels,
-                                  0, 30,
+                                  range(0, 30),
                                   delta_led_lightup=GLOVE_HACKS.FAST_LED_DELTA, anim_time=GLOVE_HACKS.FAST_LED_ANIM_TIME,
                                   target_col=color,
                                   name=name)
 
 def fastFlashRtL(pixels, color: RGBBytesColor, name: str="GENERIC") -> 'GloveFingerFlashAction':
     return GloveFingerFlashAction(pixels,
-                                  30, 0,
+                                  range(29, -1, -1),
                                   delta_led_lightup=GLOVE_HACKS.FAST_LED_DELTA, anim_time=GLOVE_HACKS.FAST_LED_ANIM_TIME,
                                   target_col=color,
                                   name=name)
@@ -89,8 +86,7 @@ def fastFlashRtL(pixels, color: RGBBytesColor, name: str="GENERIC") -> 'GloveFin
 
 class GloveFingerFlashAction(LedAction):
     def __init__(self, pixels: Union[NeoPixel],
-                 led_start_idx: int,
-                 led_stop_idx: int,
+                 led_range: range,
                  delta_led_lightup: float,
                  anim_time: float,
                  target_col: RGBBytesColor, # TODO: support list of colors>?
@@ -98,30 +94,26 @@ class GloveFingerFlashAction(LedAction):
                  name: str = "GENERIC"):
         super().__init__(pixels=pixels, iteration_time=1)
         self.ascending = ascending
-        self.led_start_idx = led_start_idx
-        self.led_stop_idx = led_stop_idx
+        self.led_range = led_range
         self.delta_led_lightup = delta_led_lightup
         self.anim_time = anim_time
         self.target_col = target_col
         self.pixels = pixels
         self.name = name
 
-        pixLen = led_stop_idx - led_start_idx
+        pixLen = len(led_range)
         last_led_start_time = pixLen * delta_led_lightup
         self.destroy_t_offset = last_led_start_time + self.anim_time
 
-    def _get_led_col(self, curr_t: float, i: int) -> RGBBytesColor:
-        cur_pix_col = self.pixels[i]
-
+    def _get_led_col(self, curr_t: float, cur_pix_col: RGBBytesColor, i: int) -> RGBBytesColor:
         anim_start = self.start_time + i * self.delta_led_lightup
         if curr_t < anim_start: return cur_pix_col # dont affect until start
 
         anim_end = anim_start + self.anim_time
+        i_t = inverse_lerp(curr_t, anim_start, anim_end)
 
         # if curr_t > anim_end: return cur_pix_col
-        i_t = inverse_lerp(curr_t, anim_start, anim_end)
-        if i_t >\
-                2: return cur_pix_col # completed fade in + out already
+        if i_t >= 2: return cur_pix_col # completed fade in + out already
 
         adjusted_t = sin(i_t * pi) * 0.5 + 0.5
 
@@ -132,6 +124,12 @@ class GloveFingerFlashAction(LedAction):
             print(f"Destroying Finger action! ({self.name})")
             self.destroy()
 
-        for i in range(self.led_start_idx, self.led_stop_idx):
-            col = self._get_led_col(t, i)
+        for i, led_i in enumerate(self.led_range):
+            cur_pix_col = self.pixels[led_i]
+            # if led_i in (0, 1, 2, 3):
+            #     self.pixels[28] = COL_RED
+            # else:
+            #     self.pixels[led_i] = self.pixels[led_i]
+            col = self._get_led_col(t, cur_pix_col, i)
             self.pixels[i] = col
+        pass
